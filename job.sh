@@ -3,7 +3,7 @@
 # Set number of default runs
 default_runs=5
 
-# Check if argument is provided (maybe edit later for no argument default value?)
+# Check if argument is correct
 if [ $# -gt 1 ]; then
     echo "Usage: $0"
     echo "Usage: $0 <number_of_runs>"
@@ -20,7 +20,7 @@ if [ "$1" = "clean" ]; then
     exit 0
 fi
 
-# Check for valid number numbers
+# Check for valid number as argument, otherwise run default_runs
 if [ $# -eq 0 ]; then
     echo "Running default: 5 runs"
     num_runs=$default_runs
@@ -33,7 +33,7 @@ fi
 
 # Change to the dimemc_vsm directory
 echo "Changing to dimemc_vsm directory..."
-cd "$(dirname "$0")/dimemc_vsm" || exit 1
+cd "$(dirname "$0")/dimeMC/resonant" || exit 1
 
 # Compile the Fortran code
 echo "Compiling dimemcv1.07_vsm.f..."
@@ -86,20 +86,14 @@ fi
 
 # Run python scripts (add better checks for failure? Would involve changing python files too)
 echo "Generating root files"
-python3 ../plotting/exrec_to_root_resonant.py > /dev/null 2>&1
+python3 ../analysis/dimeMC/exrec_to_root_resonant.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate exrec.root"
     exit 1
 fi
 echo "Generating graphs"
-python3 ../plotting/rho_plots_resonant.py > /dev/null 2>&1
+python3 ../analysis/dimeMC/rho_plots_resonant.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate graphs"
-    exit 1
-fi
-echo "Analysing mxsq distribution"
-python3 ../plotting/mxsq_analysis.py > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to analyse mxsq"
     exit 1
 fi
