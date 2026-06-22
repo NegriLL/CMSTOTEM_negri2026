@@ -1,0 +1,13 @@
+*.f
+*.dat
+*.40
+*.f90
+*.o
+*.out
+dime
+/__pycache__
+/dimemc
+.venv
+.DS_Store
+*.png
+*.root
