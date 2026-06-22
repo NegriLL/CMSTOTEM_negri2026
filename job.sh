@@ -14,7 +14,7 @@ fi
 # Check for clean command
 if [ "$1" = "clean" ]; then
     echo "Cleaning up exrec#.dat files..."
-    cd "$(dirname "$0")/dimemc_vsm" || exit 1
+    cd "$(dirname "$0")/dimeMC/resonant" || exit 1
     rm -f exrec[0-9]*.dat exrec_combined.dat batchjob.out
     echo "Deleted all exrec#.dat, exrec_combined.dat, and batchjob.out files."
     exit 0
@@ -86,13 +86,14 @@ fi
 
 # Run python scripts (add better checks for failure? Would involve changing python files too)
 echo "Generating root files"
-python3 ../analysis/dimeMC/exrec_to_root_resonant.py > /dev/null 2>&1
+cd ../..
+python3 analysis/dimeMC/exrec_to_root_resonant.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate exrec.root"
     exit 1
 fi
 echo "Generating graphs"
-python3 ../analysis/dimeMC/rho_plots_resonant.py > /dev/null 2>&1
+python3 analysis/dimeMC/rho_plots_resonant.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate graphs"
     exit 1

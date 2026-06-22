@@ -209,7 +209,7 @@ def main():
         h.GetXaxis().SetTitle("Rapidity")
         h.GetYaxis().SetTitle("Events")
     
-    save_path = Path(__file__).parent.parent / "plots/rho_plots_resonant"
+    save_path = Path(__file__).parent.parent.parent / "plots" / "dimeMC" / "resonant" / "rho_plots"
     
     # plot pion momentum for each track
     canvas_pion = ROOT.TCanvas("canvas_pion", "Pion Track Momentum Distribution", 1400, 600)
