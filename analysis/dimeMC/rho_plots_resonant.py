@@ -13,6 +13,11 @@ ROOT.gROOT.SetBatch(True)
 def main():
     # Open the ROOT file
     file_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
+    save_path = Path(__file__).parent.parent.parent / "plots" / "dimeMC" / "resonant"
+    # create folders if they don't exist
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    save_path.mkdir(parents=True, exist_ok=True)
+
     root_file = ROOT.TFile(str(file_path))
     
     if not root_file or root_file.IsZombie():
@@ -207,8 +212,6 @@ def main():
     for h in (total_rapidity_hist_raw, total_rapidity_hist_cut):
         h.GetXaxis().SetTitle("Rapidity")
         h.GetYaxis().SetTitle("Events")
-    
-    save_path = Path(__file__).parent.parent.parent / "plots" / "dimeMC" / "resonant"
     
     # plot pion momentum for each track
     canvas_pion = ROOT.TCanvas("canvas_pion", "Pion Track Momentum Distribution", 1400, 600)

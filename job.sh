@@ -85,16 +85,17 @@ else
 fi
 
 # Run python scripts (add better checks for failure? Would involve changing python files too)
-echo "Generating root files"
+echo "Generating root files..."
 cd ../..
 python3 analysis/dimeMC/exrec_to_root_resonant.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate exrec.root"
     exit 1
 fi
-echo "Generating graphs"
+echo "Generating graphs..."
 python3 analysis/dimeMC/rho_plots_resonant.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate graphs"
     exit 1
 fi
+echo "Done!"

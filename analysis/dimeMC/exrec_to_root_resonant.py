@@ -252,6 +252,10 @@ if __name__ == "__main__":
     
     input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec_combined.dat"
     output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
+
+    # make sure path exists
+    input_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     
     if len(sys.argv) > 1:
         input_path = Path(sys.argv[1])
