@@ -7,3 +7,4 @@ Set up:
 2. Download dimeMC and save it to the dimeMC folder.
     - dimemc goes in nonreson
     - dimemc_vsm goes in resonant
+3. It's a good idea to increase the precision of DimeMC output. Go into the code and change the format lines around ~1260 to E25.16
