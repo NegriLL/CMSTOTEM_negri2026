@@ -12,7 +12,7 @@ ROOT.gROOT.SetBatch(True)
 
 def main():
     # Open the ROOT file
-    file_path = Path(__file__).parent.parent / "data" / "exrec_resonant.root"
+    file_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
     root_file = ROOT.TFile(str(file_path))
     
     if not root_file or root_file.IsZombie():
@@ -154,7 +154,6 @@ def main():
             # Calculate mass_loss - two_rho_mass
             mass_loss = entry.mass_loss_p[0]
             mass_loss_diff = mass_loss - total.M()
-            print('{:.3E}'.format(total.M()))
             mass_loss_diff_raw.append(mass_loss_diff)
             mass_loss_hist.Fill(mass_loss_diff)
             
@@ -209,7 +208,7 @@ def main():
         h.GetXaxis().SetTitle("Rapidity")
         h.GetYaxis().SetTitle("Events")
     
-    save_path = Path(__file__).parent.parent.parent / "plots" / "dimeMC" / "resonant" / "rho_plots"
+    save_path = Path(__file__).parent.parent.parent / "plots" / "dimeMC" / "resonant"
     
     # plot pion momentum for each track
     canvas_pion = ROOT.TCanvas("canvas_pion", "Pion Track Momentum Distribution", 1400, 600)
