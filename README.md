@@ -6,4 +6,4 @@ Set up:
     - TOTEM40.root, TOTEM41.root, TOTEM42.root, TOTEM43.root
 2. Download dimeMC and save it to the dimeMC folder.
     - dimemc goes in nonreson
-    - dimemc_vsm comes in resonant
+    - dimemc_vsm goes in resonant
