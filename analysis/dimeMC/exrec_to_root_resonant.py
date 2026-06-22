@@ -250,7 +250,7 @@ def read_file(input_file, output_file):
 if __name__ == "__main__":
     import sys
     
-    input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec_combined.dat"
+    input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec.dat"
     output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
 
     # make sure path exists
