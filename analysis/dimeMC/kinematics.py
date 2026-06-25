@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import ROOT
+ROOT.gROOT.SetBatch(True) # Making sure graphs don't open and annoy me
+
 import math
 import sys
 from pathlib import Path
@@ -240,10 +242,19 @@ def plot_angle_vs_angle(proton_angles_resonant, proton_angles_nonreson,
     
 
 def main():
-    root_folder = Path(__file__).parent.parent.parent
-    root_path_resonant = root_folder / "data" / "dimeMC" / "exrec_resonant.root"
-    root_path_nonreson = root_folder / "data" / "dimeMC" / "exrec_nonreson.root"
-    save_path = root_folder / "plots" / "dimeMC" / "kinematics_combined"
+
+    if len(sys.argv) == 4:
+        root_path_resonant = Path(sys.argv[1])
+        root_path_nonreson = Path(sys.argv[2])
+        save_path = Path(sys.argv[3])
+    elif len(sys.argv) == 1:
+        root_folder = Path(__file__).parent.parent.parent
+        root_path_resonant = root_folder / "data" / "dimeMC" / "exrec_resonant.root"
+        root_path_nonreson = root_folder / "data" / "dimeMC" / "exrec_nonreson.root"
+        save_path = root_folder / "plots" / "dimeMC" / "kinematics_combined"
+    else:
+        print("Incorrect number of input values. Expected 0 or 3")
+        sys.exit(1)
 
     # make sure path exists
     save_path.mkdir(parents=True, exist_ok=True)
