@@ -13,4 +13,5 @@ Set up:
       READ(arg, *) nev        ! no. of unweighted events generated to event record
     this way fortran can take the number of runs directly from the command line.
 5. If you get a permission denied error when trying to run job.sh, try running "chmod +x job.sh" first
-6. If there are problems (and there will be), email me.
+6. create a virtual environment. If you are in lxplus, install root, numpy and matplotlib through pip
+7. If there are problems (and there will be), email me.
