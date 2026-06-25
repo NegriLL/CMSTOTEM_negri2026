@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import ROOT
+import sys
 import numpy as np
 
 from pathlib import Path
@@ -248,19 +249,20 @@ def read_file(input_file, output_file):
 
 
 if __name__ == "__main__":
-    import sys
-    
-    input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec.dat"
-    output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
+
+    if len(sys.argv) == 3:
+        input_path = Path(sys.argv[1])
+        output_path = Path(sys.argv[2])
+    elif len(sys.argv) == 1:
+        input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec.dat"
+        output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
+    else:
+        print("Incorrect number of input values. Expected 0 or 2")
+        sys.exit(1)
 
     # make sure path exists
     input_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    if len(sys.argv) > 1:
-        input_path = Path(sys.argv[1])
-    if len(sys.argv) > 2:
-        output_path = Path(sys.argv[2])
     
     if not input_path.exists():
         print(f"Error: File not found: {input_path}")
