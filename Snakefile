@@ -1,3 +1,7 @@
+rule all:
+    input:
+        directory("plots/dimeMC/kinematics_combined")
+
 rule simulate_resonant:
     input:
         fortran="dimeMC/resonant/dimemcv1.07_vsm.f",
@@ -5,7 +9,7 @@ rule simulate_resonant:
     output:
         "dimeMC/resonant/exrec.dat"
     shell:
-        "./jobs/run_simulation.sh {input.fortran}"
+        "./{input.script} {input.fortran}"
 
 rule simulate_nonreson:
     input:
@@ -14,7 +18,7 @@ rule simulate_nonreson:
     output:
         "dimeMC/nonreson/exrec.dat"
     shell:
-        "./jobs/run_simulation.sh {input.fortran}"
+        "./{input.script} {input.fortran}"
 
 rule exrec_to_tree_resonant:
     input:
