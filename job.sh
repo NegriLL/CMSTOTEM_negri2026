@@ -4,10 +4,10 @@
 resonant_folder="$(dirname "$0")/dimeMC/resonant"
 nonreson_folder="$(dirname "$0")/dimeMC/nonreson"
 
-# fortran number of runs
+# Number of runs for fortran
 num_runs=1
 
-# check options
+# Check options
 clean=false
 nosim=false
 
@@ -39,7 +39,7 @@ if [ "$clean" == true ]; then
     exit 0
 fi
 
-# simulation run code
+# Run simulation code
 function compile_and_run() {
     echo "Compiling $1"
     cd "$1" || exit 1
@@ -72,10 +72,10 @@ status1=$?
 wait $pid2
 status2=$?
 
+# This just makes sure that we exit the code if a run fails
 if [ $status1 -ne 0 ] || [ $status2 -ne 0 ]; then
     exit 1
 fi
-
 
 # Run python scripts (add better checks for failure? Would involve changing python files too)
 function run_python() {
@@ -91,7 +91,7 @@ function run_python() {
 echo
 echo "Running Python scripts."
 if [ "$nosim" = true ]; then
-    echo Skipping exrec to tree file creation.
+    echo Skipping exrec to tree scripts.
 else
     run_python "analysis/dimeMC/exrec_to_root_resonant.py"
     run_python "analysis/dimeMC/exrec_to_root.py"
