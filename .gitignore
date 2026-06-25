@@ -11,3 +11,6 @@ dime
 .DS_Store
 *.png
 *.root
+.snakemake
+/logs
+.snakemake_timestamp
