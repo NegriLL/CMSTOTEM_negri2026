@@ -1,18 +1,20 @@
 rule simulate_resonant:
     input:
-        "dimeMC/resonant/dimemcv1.07_vsm.f"
+        fortran="dimeMC/resonant/dimemcv1.07_vsm.f",
+        script="jobs/run_simulation.sh"
     output:
         "dimeMC/resonant/exrec.dat"
     shell:
-        "./jobs/run_simulation.sh {input}"
+        "./jobs/run_simulation.sh {input.fortran}"
 
 rule simulate_nonreson:
     input:
-        "dimeMC/nonreson/dimemcv1.07.f"
+        fortran="dimeMC/nonreson/dimemcv1.07.f",
+        script="jobs/run_simulation.sh"
     output:
         "dimeMC/nonreson/exrec.dat"
     shell:
-        "./jobs/run_simulation.sh {input}"
+        "./jobs/run_simulation.sh {input.fortran}"
 
 rule exrec_to_tree_resonant:
     input:
