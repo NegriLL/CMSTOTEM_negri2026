@@ -2,6 +2,8 @@ rule all:
     input:
         directory("plots/dimeMC/kinematics_combined")
 
+
+# Simulation rules
 rule simulate_resonant:
     input:
         fortran="dimeMC/resonant/dimemcv1.07_vsm.f",
@@ -20,6 +22,7 @@ rule simulate_nonreson:
     shell:
         "./{input.script} {input.fortran}"
 
+# translating to root (TODO: could be improved if we used the same code)
 rule exrec_to_tree_resonant:
     input:
         "dimeMC/resonant/exrec.dat"
@@ -29,7 +32,7 @@ rule exrec_to_tree_resonant:
         "logs/exrec_to_tree_resonant.log"
     shell:
         "python3 analysis/dimeMC/exrec_to_root_resonant.py {input} {output} &> {log}"
-
+        
 rule exrec_to_tree_nonreson:
     input:
         "dimeMC/nonreson/exrec.dat"
@@ -40,6 +43,8 @@ rule exrec_to_tree_nonreson:
     shell:
         "python3 analysis/dimeMC/exrec_to_root.py {input} {output} &> {log}"
 
+
+# DimeMC analysis rules
 rule kinematic_analysis:
     input:
         "data/dimeMC/exrec_resonant.root",
@@ -50,3 +55,34 @@ rule kinematic_analysis:
         "logs/kinematic_analysis.log"
     shell:
         "python3 analysis/dimeMC/kinematics.py {input} {output} &> {log}"
+
+
+#----------------------------------------------//----------------------------------------------#
+# Data analysis rules
+# Rules for combining trees for [D]iagonal [P]arallel and [A]ll
+rule combine_trees:
+    input:
+        files=lambda wildcards: expand(
+            "data/YounesNtuples/TOTEM{p}{n}.root",
+            p={"D": ["2"], "P": ["4"], "A": ["2", "4"]}[wildcards.suffix],
+            n=range(0, 4)
+        ),
+        script="analysis/combine_trees.py"
+    output:
+        "data/combined/TOTEM_{suffix}.root"
+    shell:
+        "python3 {input.script} {input.files} {output}"
+
+
+rule add_glueball_mass:
+    input:
+        tree="data/combined/TOTEM_{suffix}.root",
+        script="analysis/create_invmass_branch.py"
+    output:
+        "data/glueball_mass/TOTEM_{suffix}.root"
+    shell:
+        "python3 {input.script} {input.tree} {output}"
+
+
+#----------------------------------------------//----------------------------------------------#
+# Combined Analysis
