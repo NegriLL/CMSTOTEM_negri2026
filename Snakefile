@@ -25,7 +25,7 @@ rule simulate_nonreson:
 # translating to root (TODO: could be improved if we used the same code)
 rule exrec_to_tree_resonant:
     input:
-        data="dimeMC/resonant/exrec.dat"
+        data="dimeMC/resonant/exrec.dat",
         script="analysis/dimeMC/exrec_to_root_resonant.py"
     output:
         "data/dimeMC/exrec_resonant.root"
@@ -36,7 +36,7 @@ rule exrec_to_tree_resonant:
         
 rule exrec_to_tree_nonreson:
     input:
-        data="dimeMC/nonreson/exrec.dat"
+        data="dimeMC/nonreson/exrec.dat",
         script="analysis/dimeMC/exrec_to_root.py"
     output:
         "data/dimeMC/exrec_nonreson.root"
@@ -50,7 +50,7 @@ rule exrec_to_tree_nonreson:
 rule kinematic_analysis:
     input:
         data_reson="data/dimeMC/exrec_resonant.root",
-        data_nonre="data/dimeMC/exrec_nonreson.root"
+        data_nonre="data/dimeMC/exrec_nonreson.root",
         script="analysis/dimeMC/kinematics.py"
     output:
         directory("plots/dimeMC/kinematics_combined")
