@@ -1,0 +1,4 @@
+matplotlib==3.11.0
+numpy==2.5.0
+root==0.1a12
+snakemake==9.23.1
