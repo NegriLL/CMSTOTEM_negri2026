@@ -7,7 +7,7 @@ import ROOT
 import math
 from pathlib import Path
 
-# Set ROOT to batch mode to avoid GUI issues
+# Set ROOT to batch mode so ROOT doesn't annoy me
 ROOT.gROOT.SetBatch(True)
 
 def main():
