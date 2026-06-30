@@ -69,7 +69,7 @@ rule combine_trees:
             p={"D": ["2"], "P": ["4"], "A": ["2", "4"]}[wildcards.suffix],
             n=range(0, 4)
         ),
-        script="analysis/combine_trees.py"
+        script="analysis/utilities/combine_trees.py"
     output:
         "data/combined/TOTEM_{suffix}.root"
     shell:
@@ -79,7 +79,7 @@ rule combine_trees:
 rule add_glueball_mass:
     input:
         tree="data/combined/TOTEM_{suffix}.root",
-        script="analysis/create_invmass_branch.py"
+        script="analysis/utilities/create_invmass_branch.py"
     output:
         "data/glueball_mass/TOTEM_{suffix}.root"
     shell:
