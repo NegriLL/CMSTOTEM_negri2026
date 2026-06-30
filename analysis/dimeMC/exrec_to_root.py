@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import ROOT
-import math
+import sys
+import numpy as np
 
 from pathlib import Path
 
@@ -10,7 +11,9 @@ def read_file(input_file, output_file):
     # Parameters
     event_numbers = []
     p1_in_pz_list = []   # incoming proton 1 pz
+    p1_in_e_list = []    # incoming proton 1 energy
     p2_in_pz_list = []   # incoming proton 2 pz
+    p2_in_e_list = []    # incoming proton 2 energy
     p1_out_px_list = []  # outgoing proton 1 px
     p1_out_py_list = []
     p1_out_pz_list = []
@@ -46,11 +49,13 @@ def read_file(input_file, output_file):
                 current_event = event_num
                 line_idx += 1
 
-                # Read first incoming proton (pz only)
+                # Read first incoming proton (pz and e only)
                 particle_line = lines[line_idx].strip()
                 particle_parts = particle_line.split()
                 p1_in_pz = float(particle_parts[9])
                 p1_in_pz_list.append(p1_in_pz)
+                p1_in_e = float(particle_parts[10])
+                p1_in_e_list.append(p1_in_e)
                 line_idx += 1
 
                 # Read second incoming proton (pz only)
@@ -58,6 +63,8 @@ def read_file(input_file, output_file):
                 particle_parts = particle_line.split()
                 p2_in_pz = float(particle_parts[9])
                 p2_in_pz_list.append(p2_in_pz)
+                p2_in_e = float(particle_parts[10])
+                p2_in_e_list.append(p2_in_e)
                 line_idx += 1
 
                 # Read first outgoing proton (px, py, pz, e)
@@ -86,19 +93,18 @@ def read_file(input_file, output_file):
                 p2_out_e_list.append(p2_out_e)
                 line_idx += 1
 
-
                 # Claculate mass loss
                 p1_in_p = abs(p1_in_pz)
-                p1_out_p = math.sqrt(p1_out_px**2 + p1_out_py**2 + p1_out_pz**2)
+                p1_out_p = np.sqrt(p1_out_px**2 + p1_out_py**2 + p1_out_pz**2)
 
                 p2_in_p = abs(p2_in_pz)
-                p2_out_p = math.sqrt(p2_out_px**2 + p2_out_py**2 + p2_out_pz**2)
+                p2_out_p = np.sqrt(p2_out_px**2 + p2_out_py**2 + p2_out_pz**2)
 
                 xi_1 = abs(p1_out_p - p1_in_p) / p1_in_p
                 xi_2 = abs(p2_out_p - p2_in_p) / p2_in_p
                 
-                s = (p1_in_pz - p2_in_pz)**2
-                mass_loss = math.sqrt(xi_1 * xi_2 * s)
+                s = (p1_in_p + p2_in_p)**2
+                mass_loss = np.sqrt(xi_1 * xi_2 * s)
                 mass_loss_list.append(mass_loss)
 
                 # Count remaining particles (produced particles)
@@ -136,7 +142,9 @@ def read_file(input_file, output_file):
     # Create branches for event-level data
     event_no = ROOT.std.vector('int')()
     incoming_p1_pz = ROOT.std.vector('double')()
+    incoming_p1_e = ROOT.std.vector('double')()
     incoming_p2_pz = ROOT.std.vector('double')()
+    incoming_p2_e = ROOT.std.vector('double')()
     outgoing_p1_px = ROOT.std.vector('double')()
     outgoing_p1_py = ROOT.std.vector('double')()
     outgoing_p1_pz = ROOT.std.vector('double')()
@@ -156,7 +164,9 @@ def read_file(input_file, output_file):
     
     tree.Branch("event_number", event_no)
     tree.Branch("p1_in_pz", incoming_p1_pz)
+    tree.Branch("p1_in_e", incoming_p1_e)
     tree.Branch("p2_in_pz", incoming_p2_pz)
+    tree.Branch("p2_in_e", incoming_p2_e)
     tree.Branch("p1_out_px", outgoing_p1_px)
     tree.Branch("p1_out_py", outgoing_p1_py)
     tree.Branch("p1_out_pz", outgoing_p1_pz)
@@ -178,7 +188,9 @@ def read_file(input_file, output_file):
     for i in range(len(event_numbers)):
         event_no.clear()
         incoming_p1_pz.clear()
+        incoming_p1_e.clear()
         incoming_p2_pz.clear()
+        incoming_p2_e.clear()
         outgoing_p1_px.clear()
         outgoing_p1_py.clear()
         outgoing_p1_pz.clear()
@@ -199,7 +211,9 @@ def read_file(input_file, output_file):
         event_no.push_back(event_numbers[i])
         
         incoming_p1_pz.push_back(p1_in_pz_list[i])
+        incoming_p1_e.push_back(p1_in_e_list[i])
         incoming_p2_pz.push_back(p2_in_pz_list[i])
+        incoming_p2_e.push_back(p2_in_e_list[i])
 
         outgoing_p1_px.push_back(p1_out_px_list[i])
         outgoing_p1_py.push_back(p1_out_py_list[i])
@@ -235,19 +249,20 @@ def read_file(input_file, output_file):
 
 
 if __name__ == "__main__":
-    import sys
-    
-    input_path = Path(__file__).parent.parent.parent / "dimeMC" / "nonreson" / "exrec.dat"
-    output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_nonreson.root"
+
+    if len(sys.argv) == 3:
+        input_path = Path(sys.argv[1])
+        output_path = Path(sys.argv[2])
+    elif len(sys.argv) == 1:
+        input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec.dat"
+        output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
+    else:
+        print("Incorrect number of input values. Expected 0 or 2")
+        sys.exit(1)
 
     # make sure path exists
     input_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    if len(sys.argv) > 1:
-        input_path = Path(sys.argv[1])
-    if len(sys.argv) > 2:
-        output_path = Path(sys.argv[2])
     
     if not input_path.exists():
         print(f"Error: File not found: {input_path}")

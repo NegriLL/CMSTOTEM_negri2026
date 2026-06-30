@@ -22,11 +22,10 @@ rule simulate_nonreson:
     shell:
         "./{input.script} {input.fortran}"
 
-# translating to root (TODO: could be improved if we used the same code)
 rule exrec_to_tree_resonant:
     input:
         data="dimeMC/resonant/exrec.dat",
-        script="analysis/dimeMC/exrec_to_root_resonant.py"
+        script="analysis/dimeMC/exrec_to_root.py"
     output:
         "data/dimeMC/exrec_resonant.root"
     log:
