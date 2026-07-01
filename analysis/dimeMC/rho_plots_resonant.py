@@ -85,7 +85,7 @@ def main():
     for entry in tree:
         pions = []
         rhos = []
-        for i in range(entry.ntrk[0]):
+        for i in range(entry.ntrk):
             if abs(entry.produced_id[i]) == 211:  # Pion
                 px = entry.produced_px[i]
                 py = entry.produced_py[i]
@@ -102,22 +102,22 @@ def main():
                 rhos.append(vec)     
         
         # Check acceptance
-        proton_cut_passed = ((proton_py_min < abs(entry.p1_out_py[0]) < proton_py_max) and 
-                             (proton_py_min < abs(entry.p2_out_py[0]) < proton_py_max))
+        proton_cut_passed = ((proton_py_min < abs(entry.p1_out_py) < proton_py_max) and 
+                             (proton_py_min < abs(entry.p2_out_py) < proton_py_max))
         
         # Check conservation of momentum
         rho1 = rhos[0]
         rho2 = rhos[1]
-        px_tot = entry.p1_out_px[0] + rho1.Px() + rho2.Px() + entry.p2_out_px[0]
-        py_tot = entry.p1_out_py[0] + rho1.Py() + rho2.Py() + entry.p2_out_py[0]
-        pz_tot = entry.p1_out_pz[0] + rho1.Pz() + rho2.Pz() + entry.p2_out_pz[0]
-        pe_tot = entry.p1_out_e[0] + rho1.E() + rho2.E() + entry.p2_out_e[0] 
+        px_tot = entry.p1_out_px + rho1.Px() + rho2.Px() + entry.p2_out_px
+        py_tot = entry.p1_out_py + rho1.Py() + rho2.Py() + entry.p2_out_py
+        pz_tot = entry.p1_out_pz + rho1.Pz() + rho2.Pz() + entry.p2_out_pz
+        pe_tot = entry.p1_out_e + rho1.E() + rho2.E() + entry.p2_out_e
         #print(f"{px_tot}\t\t\t{py_tot}\t\t\t{pz_tot}\t\t{pe_tot}")
 
 
         # Calculate angle between outgoing protons
-        p1 = ROOT.TLorentzVector(entry.p1_out_px[0], entry.p1_out_py[0], entry.p1_out_pz[0], entry.p1_out_e[0])
-        p2 = ROOT.TLorentzVector(entry.p2_out_px[0], entry.p2_out_py[0], entry.p2_out_pz[0], entry.p2_out_e[0])
+        p1 = ROOT.TLorentzVector(entry.p1_out_px, entry.p1_out_py, entry.p1_out_pz, entry.p1_out_e)
+        p2 = ROOT.TLorentzVector(entry.p2_out_px, entry.p2_out_py, entry.p2_out_pz, entry.p2_out_e)
         angle = abs(p1.Phi() - p2.Phi())
         # Normalize angle to be between 0 and 2pi
         if angle > 2 * math.pi:
@@ -157,7 +157,7 @@ def main():
             total_rapidity_hist_raw.Fill(total.Rapidity())
             
             # Calculate mass_loss - two_rho_mass
-            mass_loss = entry.mass_loss_p[0]
+            mass_loss = entry.mass_loss_p
             mass_loss_diff = mass_loss - total.M()
             mass_loss_diff_raw.append(mass_loss_diff)
             mass_loss_hist.Fill(mass_loss_diff)

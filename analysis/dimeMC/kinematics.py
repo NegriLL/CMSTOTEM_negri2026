@@ -43,7 +43,7 @@ def get_particles(file_path):
     # Iterate through entries
     for entry in tree:
         event_pions = []
-        for i in range(entry.ntrk[0]):
+        for i in range(entry.ntrk):
             if abs(entry.produced_id[i]) == 211:  # Pion
                 px = entry.produced_px[i]
                 py = entry.produced_py[i]
@@ -58,13 +58,13 @@ def get_particles(file_path):
         glue = event_pions[0] + event_pions[1] + event_pions[2] + event_pions[3]
         glues.append(glue)
 
-        proton_cut_passed.append(((proton_py_min < abs(entry.p1_out_py[0]) < proton_py_max)
-                                  and (proton_py_min < abs(entry.p2_out_py[0]) < proton_py_max)))
+        proton_cut_passed.append(((proton_py_min < abs(entry.p1_out_py) < proton_py_max)
+                                  and (proton_py_min < abs(entry.p2_out_py) < proton_py_max)))
         mass_cut_passed.append(2.1 < glue.M() < 2.4)
 
         # Calculate angle between outgoing protons
-        p1 = ROOT.TLorentzVector(entry.p1_out_px[0], entry.p1_out_py[0], entry.p1_out_pz[0], entry.p1_out_e[0])
-        p2 = ROOT.TLorentzVector(entry.p2_out_px[0], entry.p2_out_py[0], entry.p2_out_pz[0], entry.p2_out_e[0])
+        p1 = ROOT.TLorentzVector(entry.p1_out_px, entry.p1_out_py, entry.p1_out_pz, entry.p1_out_e)
+        p2 = ROOT.TLorentzVector(entry.p2_out_px, entry.p2_out_py, entry.p2_out_pz, entry.p2_out_e)
         angles = [p1.Phi(), p2.Phi()]
 
         proton_angles.append(angles)
@@ -239,7 +239,48 @@ def plot_angle_vs_angle(proton_angles_resonant, proton_angles_nonreson,
     ROOT.gPad.SetTitle("Non-resonant")
     
     canvas_proton_angle.SaveAs(str(save_path / "proton_angle_vs_angle.png"))
+
+
+def plot_angle_difference(proton_angles_resonant, proton_angles_nonreson, save_path):
+    nbins = 100
+    resonant = ROOT.TH1F("resonant", "Proton Angles Resonant", nbins, 0, math.pi)
+    nonreson = ROOT.TH1F("nonreson", "Proton Angles Nonresonant", nbins, 0, math.pi)
+
+    for angle1, angle2 in proton_angles_resonant:
+        diff = angle1 - angle2
+        if diff > math.pi:
+            diff = math.pi - diff
+        elif diff < math.pi:
+            diff = -diff
+        resonant.Fill(diff)
+    for angle1, angle2 in proton_angles_nonreson:
+        diff = angle1 - angle2
+        if diff > math.pi:
+            diff = math.pi - diff
+        elif diff < math.pi:
+            diff = -diff
+        nonreson.Fill(diff)
     
+    canvas_angle_difference = ROOT.TCanvas("canvas_angle_difference", "Angle Difference between Protons", 1200, 1200)
+    canvas_angle_difference.cd(1)
+
+    resonant.Draw("COLZ")
+    resonant.SetLineWidth(3)
+    resonant.SetLineColor(ROOT.kBlue)
+    ROOT.gPad.SetTitle("Resonant")
+
+    nonreson.Draw("SAME")
+    nonreson.SetLineWidth(3)
+    nonreson.SetLineColor(ROOT.kGreen)
+    ROOT.gPad.SetTitle("Nonresonant")
+
+    legend = ROOT.TLegend(0.75, 0.7, 0.95, 0.6)   
+    legend.AddEntry(resonant, "Resonant", "l")
+    legend.AddEntry(nonreson, "Non-resonant", "l")
+    legend.Draw()
+
+
+    canvas_angle_difference.SaveAs(str(save_path / "proton_angle_difference.png"))
 
 def main():
 
@@ -281,6 +322,8 @@ def main():
     plot_angle_vs_angle(proton_angles_resonant, proton_angles_nonreson,
                         proton_cut_passed_resonant, proton_cut_passed_nonreson, mass_cut,
                         save_path)
+    
+    plot_angle_difference(proton_angles_resonant, proton_angles_nonreson, save_path)
 
 
 if __name__ == '__main__':
