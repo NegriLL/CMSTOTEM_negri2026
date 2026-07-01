@@ -1,5 +1,5 @@
 rule all:
-    input:
+    output:
         directory("plots/dimeMC/kinematics_combined")
 
 
@@ -88,3 +88,23 @@ rule add_glueball_mass:
 
 #----------------------------------------------//----------------------------------------------#
 # Combined Analysis
+
+suffix_map = {
+    "D": "Diagonal",
+    "A": "All",
+    "P": "Parallel",
+}
+
+rule inv_mass_combined:
+    input:
+        data="data/glueball_mass/TOTEM_{suffix}.root",
+        dimeMC_reson="data/dimeMC/exrec_resonant.root",
+        dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
+        script="analysis/joint_analysis.py"
+    output:
+        "plots/joint/invmass_{suffix}.png"
+    params:
+        title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})"
+    shell:
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+
