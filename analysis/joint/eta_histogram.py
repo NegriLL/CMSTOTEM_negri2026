@@ -7,6 +7,9 @@ import math
 from pathlib import Path
 import numpy as np
 
+sys.path.append(str(Path(__file__).parent.parent / "utilities"))
+from cuts_string import dime_fltr, data_fltr
+
 # Making sure graphs don't open and annoy me
 ROOT.gROOT.SetBatch(True)
 
@@ -38,7 +41,7 @@ double ComputeTotalEtaPxPyPzE(int ntrk, const Tid& id, const Tpx& px, const Tpy&
 
 
 def eta_together(data, resonant, nonresonant, save_path, title):
-    nbins = 100
+    nbins = 50
     xmin = -5
     xmax = 5
     pion_mass = 0.13957
@@ -110,37 +113,9 @@ def main():
 
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Opening the files and filtering
-    proton_py_min = 0.18
-    proton_py_max = 0.68
-    rho_mass = 0.770
-    mass_interval = 0.062
-
-    px_cut = 0.130
-    py_cut = 0.060
-    p_cut = 1
-    mass_min = rho_mass - mass_interval
-    mass_max = rho_mass + mass_interval
-    
-    fltr_acceptance = ( 
-    f"(({proton_py_min} < fabs(p1_out_py)) && (fabs(p1_out_py) < {proton_py_max})) && "
-    f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
-    )
-    fltr_mass = (f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
-                 f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max}))")
-
-    fltr_data = (f"fabs(px_diff) < {px_cut} && "
-                 f"fabs(py_diff) < {py_cut} && "
-                 f"fabs(trk_p[0]) < {p_cut} && "
-                 f"fabs(trk_p[1]) < {p_cut} && "
-                 f"fabs(trk_p[2]) < {p_cut} && "
-                 f"fabs(trk_p[3]) < {p_cut} && "
-                 f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
-                 f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max}")
-
-    data = ROOT.RDataFrame("tree", str(data_file)).Filter(fltr_data)
-    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(f'{fltr_acceptance} && {fltr_mass}')
-    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(f'{fltr_acceptance} && {fltr_mass}')
+    data = ROOT.RDataFrame("tree", str(data_file)).Filter(data_fltr())
+    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(dime_fltr())
+    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(dime_fltr())
     
     eta_together(data, resonant, nonreson, save_path, title)
     

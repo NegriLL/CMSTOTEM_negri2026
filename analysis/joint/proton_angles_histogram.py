@@ -7,12 +7,15 @@ import math
 from pathlib import Path
 import numpy as np
 
+sys.path.append(str(Path(__file__).parent.parent / "utilities"))
+from cuts_string import dime_fltr, data_fltr
+
 # Making sure graphs don't open and annoy me
 ROOT.gROOT.SetBatch(True)
 
 
 def proton_angle_together(data, resonant, nonresonant, save_path, title):
-    nbins = 200
+    nbins = 100
     xmin = 0
     xmax = math.pi
 
@@ -106,7 +109,8 @@ def main():
     f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
     )
     fltr_mass = (f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
-                 f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max}))")
+                 f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max})) && "
+                 f"2.0 < inv_mass && inv_mass < 2.5")
 
     fltr_data = (f"fabs(px_diff) < {px_cut} && "
                  f"fabs(py_diff) < {py_cut} && "
@@ -115,11 +119,12 @@ def main():
                  f"fabs(trk_p[2]) < {p_cut} && "
                  f"fabs(trk_p[3]) < {p_cut} && "
                  f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
-                 f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max}")
+                 f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
+                 f"2.0 < inv_mass && inv_mass < 2.5")
 
-    data = ROOT.RDataFrame("tree", str(data_file)).Filter(fltr_data)
-    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(f'{fltr_acceptance} && {fltr_mass}')
-    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(f'{fltr_acceptance} && {fltr_mass}')
+    data = ROOT.RDataFrame("tree", str(data_file)).Filter(data_fltr())
+    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(dime_fltr())
+    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(dime_fltr())
     
     proton_angle_together(data, resonant, nonreson, save_path, title)
     
