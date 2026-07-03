@@ -2,6 +2,7 @@
 
 import ROOT
 import sys
+import math
 
 from pathlib import Path
 import numpy as np
@@ -9,19 +10,8 @@ import numpy as np
 # Making sure graphs don't open and annoy me
 ROOT.gROOT.SetBatch(True)
 
-def invariant_mass_together(data_file, resonant_file, nonresonant_file, save_path, title):
-    proton_py_min = 0.18
-    proton_py_max = 0.68
 
-    acceptance = ( 
-    f"(({proton_py_min} < fabs(p1_out_py)) && (fabs(p1_out_py) < {proton_py_max})) && "
-    f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
-    )
-
-    data = ROOT.RDataFrame("tree", str(data_file)).Filter("ntrk == 4")
-    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(acceptance)
-    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(acceptance)
-
+def invariant_mass_together(data, resonant, nonreson, save_path, title):
     nbins = 200
     xmin = 0
     xmax = 5
@@ -77,19 +67,52 @@ def invariant_mass_together(data_file, resonant_file, nonresonant_file, save_pat
 
 def main():
     if len(sys.argv) < 6:
-        print("Error: Expeted inputs")
+        print("Error: Expected inputs")
         print("[data] [dime resonant] [dime nonresonant] [save folder] [title]")
         sys.exit(1)
 
     data_file = Path(sys.argv[1])
-    dime_resonant_file = Path(sys.argv[2])
-    dime_nonresonant_file = Path(sys.argv[3])
+    resonant_file = Path(sys.argv[2])
+    nonresonant_file = Path(sys.argv[3])
     save_path = Path(sys.argv[4])
     title = sys.argv[5]
 
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
-    invariant_mass_together(data_file, dime_resonant_file, dime_nonresonant_file, save_path, title)
+    # Opening the files and filtering
+    proton_py_min = 0.18
+    proton_py_max = 0.68
+    rho_mass = 0.770
+    mass_interval = 0.062
+
+    px_cut = 0.130
+    py_cut = 0.060
+    p_cut = 1
+    mass_min = rho_mass - mass_interval
+    mass_max = rho_mass + mass_interval
+    
+    fltr_acceptance = ( 
+    f"(({proton_py_min} < fabs(p1_out_py)) && (fabs(p1_out_py) < {proton_py_max})) && "
+    f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
+    )
+    fltr_mass = (f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
+                 f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max}))")
+
+    fltr_data = (f"fabs(px_diff) < {px_cut} && "
+                 f"fabs(py_diff) < {py_cut} && "
+                 f"fabs(trk_p[0]) < {p_cut} && "
+                 f"fabs(trk_p[1]) < {p_cut} && "
+                 f"fabs(trk_p[2]) < {p_cut} && "
+                 f"fabs(trk_p[3]) < {p_cut} && "
+                 f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
+                 f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max}")
+
+    data = ROOT.RDataFrame("tree", str(data_file)).Filter(fltr_data)
+    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(f'{fltr_acceptance} && {fltr_mass}')
+    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(f'{fltr_acceptance} && {fltr_mass}')
+    
+    invariant_mass_together(data, resonant, nonreson, save_path, title)
+    
 
 if __name__ == '__main__':
     main()
