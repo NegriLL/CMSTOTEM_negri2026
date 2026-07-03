@@ -1,6 +1,11 @@
 rule all:
-    output:
-        directory("plots/dimeMC/kinematics_combined")
+    input:
+        directory("plots/dimeMC/kinematics_combined"),
+        expand(
+            "plots/joint/{graph}_{config}.png",
+            graph=["eta", "pt", "invmass", "proton_angle"],
+            config=["D", "P", "A"],
+        )
 
 
 # Simulation rules
