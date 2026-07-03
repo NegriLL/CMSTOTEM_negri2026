@@ -85,6 +85,14 @@ rule add_glueball_mass:
     shell:
         "python3 {input.script} {input.tree} {output}"
 
+rule add_kinematics:
+    input:
+        tree="data/glueball_mass/TOTEM_{suffix}.root",
+        script="analysis/utilities/create_kinematic_branch.py"
+    output:
+        "data/kinematics/TOTEM_{suffix}.root"
+    shell:
+        "python3 {input.script} {input.tree} {output}"
 
 #----------------------------------------------//----------------------------------------------#
 # Combined Analysis
@@ -97,10 +105,10 @@ suffix_map = {
 
 rule inv_mass_combined:
     input:
-        data="data/glueball_mass/TOTEM_{suffix}.root",
+        data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/exrec_resonant.root",
         dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
-        script="analysis/joint_analysis.py"
+        script="analysis/joint/invariant_mass_histogram.py"
     output:
         "plots/joint/invmass_{suffix}.png"
     params:
@@ -108,3 +116,44 @@ rule inv_mass_combined:
     shell:
         "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
 
+
+rule pt_combined:
+    input:
+        data="data/kinematics/TOTEM_{suffix}.root",
+        dimeMC_reson="data/dimeMC/exrec_resonant.root",
+        dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
+        script="analysis/joint/pt_histogram.py"
+    output:
+        "plots/joint/pt_{suffix}.png"
+    params:
+        title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})"
+    shell:
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+
+
+rule eta_combined:
+    input:
+        data="data/kinematics/TOTEM_{suffix}.root",
+        dimeMC_reson="data/dimeMC/exrec_resonant.root",
+        dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
+        script="analysis/joint/eta_histogram.py"
+    output:
+        "plots/joint/eta_{suffix}.png"
+    params:
+        title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})"
+    shell:
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+
+
+rule angles_combined:
+    input:
+        data="data/kinematics/TOTEM_{suffix}.root",
+        dimeMC_reson="data/dimeMC/exrec_resonant.root",
+        dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
+        script="analysis/joint/proton_angles_histogram.py"
+    output:
+        "plots/joint/proton_angle_{suffix}.png"
+    params:
+        title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})"
+    shell:
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
