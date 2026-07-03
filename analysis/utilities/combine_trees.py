@@ -14,10 +14,6 @@ def combineTrees(file_list, save_path):
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Error: Need at least 2 files.")
-        sys.exit(1)
-
     # Iterate through all input files
     file_list = []
     for i in range(1, len(sys.argv) - 1):
