@@ -11,7 +11,7 @@ import numpy as np
 ROOT.gROOT.SetBatch(True)
 
 sys.path.append(str(Path(__file__).parent.parent / "utilities"))
-from cuts_string import dime_fltr, data_fltr
+from cuts_string import dime_fltr, data_fltr #type: ignore
 
 
 def pt_together(data, resonant, nonreson, save_path, title):

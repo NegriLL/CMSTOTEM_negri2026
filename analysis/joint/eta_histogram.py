@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.append(str(Path(__file__).parent.parent / "utilities"))
-from cuts_string import dime_fltr, data_fltr
+from cuts_string import dime_fltr, data_fltr #type: ignore
 
 # Making sure graphs don't open and annoy me
 ROOT.gROOT.SetBatch(True)
