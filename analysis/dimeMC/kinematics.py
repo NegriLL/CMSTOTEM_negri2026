@@ -249,16 +249,12 @@ def plot_angle_difference(proton_angles_resonant, proton_angles_nonreson, save_p
     for angle1, angle2 in proton_angles_resonant:
         diff = angle1 - angle2
         if diff > math.pi:
-            diff = math.pi - diff
-        elif diff < math.pi:
-            diff = -diff
+            diff = 2 * math.pi - diff
         resonant.Fill(diff)
     for angle1, angle2 in proton_angles_nonreson:
         diff = angle1 - angle2
         if diff > math.pi:
-            diff = math.pi - diff
-        elif diff < math.pi:
-            diff = -diff
+            diff = 2 * math.pi - diff
         nonreson.Fill(diff)
     
     canvas_angle_difference = ROOT.TCanvas("canvas_angle_difference", "Angle Difference between Protons", 1200, 1200)
