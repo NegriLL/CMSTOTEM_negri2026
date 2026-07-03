@@ -25,6 +25,7 @@ def read_file(input_file, output_file):
     p2_out_e_list = []
     ntrk_list = []       # number of produced particles
     mass_loss_list = []  # M = sqrt(xi_1 * xi_2 * s)
+    primary_particles = []  # list of [event_num, id, px, py, pz, e, m] for each primary particle
     produced_particles = []  # list of [event_num, id, px, py, pz, e] for each produced particle
     invariant_mass_list = []  # invariant mass of the system of produced particles
     
@@ -109,8 +110,23 @@ def read_file(input_file, output_file):
                 mass_loss = np.sqrt(xi_1 * xi_2 * s)
                 mass_loss_list.append(mass_loss)
 
-                # Count remaining particles (produced particles)
-                ntrk = num_particles - 4
+                # Primary production
+                for _ in range(2):
+                    particle_line = lines[line_idx].strip()
+                    particle_parts = particle_line.split()
+                    
+                    particle_id = int(particle_parts[1])
+                    px = float(particle_parts[7])
+                    py = float(particle_parts[8])
+                    pz = float(particle_parts[9])
+                    e = float(particle_parts[10])
+                    m = float(particle_parts[11])
+                    
+                    # Store primary particle data with event number and id
+                    primary_particles.append([current_event, particle_id, px, py, pz, e, m])
+                    
+                    line_idx += 1
+                ntrk = num_particles - 6
                 ntrk_list.append(ntrk)
                 event_numbers.append(current_event)
 
@@ -166,6 +182,12 @@ def read_file(input_file, output_file):
     outgoing_p2_e = array('d', [0.0])
     ntrk = array('i', [0])
     mass_loss_p = array('d', [0.0])
+    primary_id = ROOT.std.vector('int')()
+    primary_px = ROOT.std.vector('double')()
+    primary_py = ROOT.std.vector('double')()
+    primary_pz = ROOT.std.vector('double')()
+    primary_e = ROOT.std.vector('double')()
+    primary_m = ROOT.std.vector('double')()
     produced_id = ROOT.std.vector('int')()
     produced_px = ROOT.std.vector('double')()
     produced_py = ROOT.std.vector('double')()
@@ -189,6 +211,12 @@ def read_file(input_file, output_file):
     tree.Branch("p2_out_e", outgoing_p2_e, "p2_out_e/D")
     tree.Branch("ntrk", ntrk, "ntrk/I")
     tree.Branch("mass_loss_p", mass_loss_p, "mass_loss_p/D")
+    tree.Branch("primary_id", primary_id)
+    tree.Branch("primary_px", primary_px)
+    tree.Branch("primary_py", primary_py)
+    tree.Branch("primary_pz", primary_pz)
+    tree.Branch("primary_e", primary_e)
+    tree.Branch("primary_m", primary_m)
     tree.Branch("produced_id", produced_id)
     tree.Branch("produced_px", produced_px)
     tree.Branch("produced_py", produced_py)
@@ -205,6 +233,12 @@ def read_file(input_file, output_file):
         produced_pz.clear()
         produced_e.clear()
         produced_m.clear()
+        primary_id.clear()
+        primary_px.clear()
+        primary_py.clear()
+        primary_pz.clear()
+        primary_e.clear()
+        primary_m.clear()
 
         event_no[0] = event_numbers[i]
         incoming_p1_pz[0] = p1_in_pz_list[i]
@@ -225,6 +259,16 @@ def read_file(input_file, output_file):
         ntrk[0] = ntrk_list[i]
         mass_loss_p[0] = mass_loss_list[i]
         invariant_mass[0] = invariant_mass_list[i]
+        
+        # Add primary particles for this event
+        for particle in primary_particles:
+            if particle[0] == event_numbers[i]:
+                primary_id.push_back(particle[1])
+                primary_px.push_back(particle[2])
+                primary_py.push_back(particle[3])
+                primary_pz.push_back(particle[4])
+                primary_e.push_back(particle[5])
+                primary_m.push_back(particle[6])
         
         # Add produced particles for this event
         for particle in produced_particles:
