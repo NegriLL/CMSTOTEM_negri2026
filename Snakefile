@@ -30,7 +30,7 @@ rule simulate_nonreson:
 rule exrec_to_tree_resonant:
     input:
         data="dimeMC/resonant/exrec.dat",
-        script="analysis/dimeMC/exrec_to_root.py"
+        script="scripts/dimeMC/exrec_to_root.py"
     output:
         "data/dimeMC/exrec_resonant.root"
     log:
@@ -41,7 +41,7 @@ rule exrec_to_tree_resonant:
 rule exrec_to_tree_nonreson:
     input:
         data="dimeMC/nonreson/exrec.dat",
-        script="analysis/dimeMC/exrec_to_root.py"
+        script="scripts/dimeMC/exrec_to_root.py"
     output:
         "data/dimeMC/exrec_nonreson.root"
     log:
@@ -50,22 +50,22 @@ rule exrec_to_tree_nonreson:
         "python3 {input.script} {input.data} {output} &> {log}"
 
 
-# DimeMC analysis rules
-rule kinematic_analysis:
+# DimeMC scripts rules
+rule kinematic_scripts:
     input:
         data_reson="data/dimeMC/exrec_resonant.root",
         data_nonre="data/dimeMC/exrec_nonreson.root",
-        script="analysis/dimeMC/kinematics.py"
+        script="scripts/dimeMC/kinematics.py"
     output:
         directory("plots/dimeMC/kinematics_combined")
     log:
-        "logs/kinematic_analysis.log"
+        "logs/kinematic_scripts.log"
     shell:
         "python3 {input.script} {input.data_reson} {input.data_nonre} {output} &> {log}"
 
 
 #----------------------------------------------//----------------------------------------------#
-# Data analysis rules
+# Data scripts rules
 # Rules for combining trees for [D]iagonal [P]arallel and [A]ll
 rule combine_trees:
     input:
@@ -74,7 +74,7 @@ rule combine_trees:
             p={"D": ["2"], "P": ["4"], "A": ["2", "4"]}[wildcards.suffix],
             n=range(0, 4)
         ),
-        script="analysis/utilities/combine_trees.py"
+        script="scripts/utilities/combine_trees.py"
     output:
         "data/combined/TOTEM_{suffix}.root"
     shell:
@@ -84,7 +84,7 @@ rule combine_trees:
 rule add_glueball_mass:
     input:
         tree="data/combined/TOTEM_{suffix}.root",
-        script="analysis/utilities/create_invmass_branch.py"
+        script="scripts/utilities/create_invmass_branch.py"
     output:
         "data/glueball_mass/TOTEM_{suffix}.root"
     shell:
@@ -93,14 +93,14 @@ rule add_glueball_mass:
 rule add_kinematics:
     input:
         tree="data/glueball_mass/TOTEM_{suffix}.root",
-        script="analysis/utilities/create_kinematic_branch.py"
+        script="scripts/utilities/create_kinematic_branch.py"
     output:
         "data/kinematics/TOTEM_{suffix}.root"
     shell:
         "python3 {input.script} {input.tree} {output}"
 
 #----------------------------------------------//----------------------------------------------#
-# Combined Analysis
+# Combined scripts
 
 suffix_map = {
     "D": "Diagonal",
@@ -113,7 +113,7 @@ rule inv_mass_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/exrec_resonant.root",
         dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
-        script="analysis/joint/invariant_mass_histogram.py"
+        script="scripts/joint/invariant_mass_histogram.py"
     output:
         "plots/joint/invmass_{suffix}.png"
     params:
@@ -127,7 +127,7 @@ rule pt_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/exrec_resonant.root",
         dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
-        script="analysis/joint/pt_histogram.py"
+        script="scripts/joint/pt_histogram.py"
     output:
         "plots/joint/pt_{suffix}.png"
     params:
@@ -141,7 +141,7 @@ rule eta_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/exrec_resonant.root",
         dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
-        script="analysis/joint/eta_histogram.py"
+        script="scripts/joint/eta_histogram.py"
     output:
         "plots/joint/eta_{suffix}.png"
     params:
@@ -155,7 +155,7 @@ rule angles_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/exrec_resonant.root",
         dimeMC_nonre="data/dimeMC/exrec_nonreson.root",
-        script="analysis/joint/proton_angles_histogram.py"
+        script="scripts/joint/proton_angles_histogram.py"
     output:
         "plots/joint/proton_angle_{suffix}.png"
     params:
