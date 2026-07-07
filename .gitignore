@@ -1,17 +1,28 @@
+# Filetypes
 *.f
-*.dat
-*.40
 *.f90
-*.o
-*.out
-dime
-/__pycache__
-/dimemc
-.venv
-.DS_Store
+*.40
+
+# Plots and Outputs
+*.dat
 *.png
 *.root
-.snakemake
-/logs
-.snakemake_timestamp
+
+# Binaries
+*.o
+*.out
+
+# OS stuff
+.DS_Store
+
+# Python environment and cache
+/.venv
 __pycache__
+
+# Snakemake
+/.snakemake
+.snakemake_timestamp
+
+# Other folders
+/dimeMC
+/logs
