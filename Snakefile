@@ -12,7 +12,7 @@ rule all:
 rule simulate_resonant:
     input:
         fortran="dimeMC/resonant/dimemcv1.07_vsm.f",
-        script="jobs/run_simulation.sh"
+        script="scripts/jobs/run_simulation.sh"
     output:
         "dimeMC/resonant/exrec.dat"
     shell:
@@ -21,7 +21,7 @@ rule simulate_resonant:
 rule simulate_nonreson:
     input:
         fortran="dimeMC/nonreson/dimemcv1.07.f",
-        script="jobs/run_simulation.sh"
+        script="scripts/jobs/run_simulation.sh"
     output:
         "dimeMC/nonreson/exrec.dat"
     shell:
