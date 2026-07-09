@@ -18,6 +18,10 @@ READ(arg, *) nev        ! no. of unweighted events generated to event record
 python -m pip download -r requirements.txt
 ```
 6. If there are problems (and there will be), email me.
+7. Everything can be run using snakemake rules. You can try running the following to get all the graphs:
+```
+snakemake --cores 8
+```
 
 Possible errors:
 - If you get a permission denied error when trying to run job.sh, try running "chmod +x job.sh" first
