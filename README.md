@@ -9,11 +9,15 @@ Instructions
     - dimemc_vsm goes in dimeMC/resonant
 3. It's a good idea to increase the precision of DimeMC output. Go into the code and change the format lines around ~1260 to E25.16
 4. You must add the following lines to dimeMC (both versions) where the nev (run count) is
-      CALL GET_COMMAND_ARGUMENT(1, arg)
-      READ(arg, *) nev        ! no. of unweighted events generated to event record
+```
+CALL GET_COMMAND_ARGUMENT(1, arg)
+READ(arg, *) nev        ! no. of unweighted events generated to event record
+```
    this way fortran can take the number of runs directly from the command line.
 5. Create a virtual environment. Check requirements.txt. To install the requirements automatically, you can try running
-    python -m pip download -r requirements.txt
+```
+python -m pip download -r requirements.txt
+```
 6. If there are problems (and there will be), email me.
 
 Possible errors:
