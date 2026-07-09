@@ -14,7 +14,7 @@ CALL GET_COMMAND_ARGUMENT(1, arg)
 READ(arg, *) nev        ! no. of unweighted events generated to event record
 ```
 5. Create a virtual environment. Check requirements.txt. To install the requirements automatically, you can try running
-```python
+```shell
 python -m pip download -r requirements.txt
 ```
 6. If there are problems (and there will be), email me.
