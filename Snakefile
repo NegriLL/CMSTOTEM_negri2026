@@ -1,3 +1,5 @@
+# Defining basic constraints
+
 wildcard_constraints:
     dime_suffix="resonant|nonreson",
     suffix="D|P|A"
@@ -13,7 +15,7 @@ suffix_map = {
     "P": "Parallel",
 }
 
-
+# General rule to generate graphs. This can be edited to accomodate new stuff
 rule all:
     input:
         directory("plots/dimeMC/kinematics_combined"),
@@ -72,8 +74,7 @@ rule kinematic_scripts:
         "python3 {input.script} {input.data_reson} {input.data_nonre} {output} &> {log}"
 
 
-#----------------------------------------------//----------------------------------------------#
-# Data scripts rules
+#-----------------------------------------// Data scripts rules \\-----------------------------------------#
 # Rules for combining trees for [D]iagonal [P]arallel and [A]ll
 rule combine_trees:
     input:
@@ -89,6 +90,7 @@ rule combine_trees:
         "python3 {input.script} {input.files} {output}"
 
 
+# Add invariant mass
 rule add_glueball_mass:
     input:
         tree="data/combined/TOTEM_{suffix}.root",
@@ -98,6 +100,8 @@ rule add_glueball_mass:
     shell:
         "python3 {input.script} {input.tree} {output}"
 
+
+# Add kinematic variables to make .Filter easier to handle
 rule add_kinematics:
     input:
         tree="data/glueball_mass/TOTEM_{suffix}.root",
@@ -107,9 +111,8 @@ rule add_kinematics:
     shell:
         "python3 {input.script} {input.tree} {output}"
 
-#----------------------------------------------//----------------------------------------------#
-# Combined scripts
-
+#-----------------------------------------// Combined scripts \\-----------------------------------------#
+# These scripts plot data and Dime together.
 rule inv_mass_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
@@ -152,6 +155,7 @@ rule eta_combined:
         "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
 
 
+# Smallest angle between the outgoing protons
 rule angles_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
