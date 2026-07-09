@@ -19,7 +19,7 @@ python -m pip download -r requirements.txt
 ```
 6. If there are problems (and there will be), email me.
 7. Everything can be run using snakemake rules. You can try running the following to get all the graphs:
-```
+```shell
 snakemake --cores 8
 ```
 
