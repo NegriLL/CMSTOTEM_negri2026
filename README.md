@@ -11,8 +11,8 @@ Instructions
 4. You must add the following lines to dimeMC (both versions) where the nev (run count) is
       CALL GET_COMMAND_ARGUMENT(1, arg)
       READ(arg, *) nev        ! no. of unweighted events generated to event record
-    this way fortran can take the number of runs directly from the command line.
-5. Create a virtual environment. Check requirements.txt. You can try running
+   this way fortran can take the number of runs directly from the command line.
+5. Create a virtual environment. Check requirements.txt. To install the requirements automatically, you can try running
     python -m pip download -r requirements.txt
 6. If there are problems (and there will be), email me.
 
