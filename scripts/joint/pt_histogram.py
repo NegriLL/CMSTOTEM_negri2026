@@ -99,23 +99,6 @@ def main():
     mass_min = rho_mass - mass_interval
     mass_max = rho_mass + mass_interval
     
-    fltr_acceptance = ( 
-    f"(({proton_py_min} < fabs(p1_out_py)) && (fabs(p1_out_py) < {proton_py_max})) && "
-    f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
-    )
-    fltr_mass = (f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
-                 f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max})) && "
-                 f"2.0 < inv_mass && inv_mass < 2.5")
-
-    fltr_data = (f"fabs(px_diff) < {px_cut} && "
-                 f"fabs(py_diff) < {py_cut} && "
-                 f"fabs(trk_p[0]) < {p_cut} && "
-                 f"fabs(trk_p[1]) < {p_cut} && "
-                 f"fabs(trk_p[2]) < {p_cut} && "
-                 f"fabs(trk_p[3]) < {p_cut} && "
-                 f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
-                 f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
-                 f"2.0 < inv_mass && inv_mass < 2.5")
 
     data = ROOT.RDataFrame("tree", str(data_file)).Filter(data_fltr())
     resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(dime_fltr())
