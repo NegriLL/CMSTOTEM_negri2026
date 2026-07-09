@@ -16,8 +16,8 @@ ROOT.gROOT.SetBatch(True)
 
 def invariant_mass_together(data, resonant, nonreson, save_path, title):
     nbins = 100
-    xmin = 0
-    xmax = 5
+    xmin = 2
+    xmax = 2.5
 
     model = ("h", "Normalized Data and DimeMC Invmass Comparison", nbins, xmin, xmax)
 

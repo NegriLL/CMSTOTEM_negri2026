@@ -16,8 +16,8 @@ from cuts_string import dime_fltr, data_fltr #type: ignore
 
 def pt_together(data, resonant, nonreson, save_path, title):
     nbins = 100
-    xmin = -1
-    xmax = 4
+    xmin = -0.5
+    xmax = 2
 
     model = ("h", "Normalized Data and DimeMC pT Comparison", nbins, xmin, xmax)
 
