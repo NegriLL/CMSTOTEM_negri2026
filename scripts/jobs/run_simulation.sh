@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set how many runs here. This can be improved in the future but for now it works
-num_runs=40000
+num_runs=50000
 # change into dime folder
 folder="$(dirname "$1")"
 file="$(basename "$1")"

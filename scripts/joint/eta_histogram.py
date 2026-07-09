@@ -85,9 +85,9 @@ def eta_together(data, resonant, nonresonant, save_path, title):
     data_hist.SetMaximum(ymax * 1.1)
 
     c = ROOT.TCanvas("c", "c", 1600, 1200)
-    data_hist.Draw("HIST")
+    nonreson_hist.Draw("HIST")
     resonant_hist.Draw("HIST SAME")
-    nonreson_hist.Draw("HIST SAME")
+    data_hist.Draw("HIST SAME")
 
     legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.9)
     legend.AddEntry(data_hist, "Data", "l")

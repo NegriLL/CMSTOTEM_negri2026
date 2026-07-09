@@ -16,8 +16,8 @@ ROOT.gROOT.SetBatch(True)
 
 def invariant_mass_together(data, resonant, nonreson, save_path, title):
     nbins = 100
-    xmin = 2
-    xmax = 2.5
+    xmin = 1.9
+    xmax = 2.6
 
     model = ("h", "Normalized Data and DimeMC Invmass Comparison", nbins, xmin, xmax)
 
@@ -49,9 +49,9 @@ def invariant_mass_together(data, resonant, nonreson, save_path, title):
 
     # Draw
     c = ROOT.TCanvas("c", "c", 1600, 1200)
-    data_hist.Draw("HIST")
+    nonreson_hist.Draw("HIST")
     resonant_hist.Draw("HIST SAME")
-    nonreson_hist.Draw("HIST SAME")
+    data_hist.Draw("HIST SAME")
 
     # Make sure y-axis fits all three
     ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, nonreson_hist))

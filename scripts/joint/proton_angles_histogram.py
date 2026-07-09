@@ -60,9 +60,9 @@ def proton_angle_together(data, resonant, nonresonant, save_path, title):
     nonreson_hist.SetLineWidth(3)
 
     c = ROOT.TCanvas("c", "c", 1600, 1200)
-    data_hist.Draw("HIST")
+    nonreson_hist.Draw("HIST")
     resonant_hist.Draw("HIST SAME")
-    nonreson_hist.Draw("HIST SAME")
+    data_hist.Draw("HIST SAME")
 
     ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, nonreson_hist))
     data_hist.SetMaximum(ymax * 1.1)
