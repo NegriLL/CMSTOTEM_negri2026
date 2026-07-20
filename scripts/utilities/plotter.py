@@ -1,11 +1,11 @@
 import ROOT
 
-def plot_joint(data_hist, resonant_hist, nonreson_hists, title, save_path):
+def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     data_hist = data_hist.GetValue()
     resonant_hist = resonant_hist.GetValue()
-    nonreson_hists = [hist.GetValue() for hist in nonreson_hists]
+    nonreson_list = [nonreson_hists[key].GetValue() for key in nonreson_hists]
 
-    for h in (data_hist, resonant_hist, *nonreson_hists):
+    for h in (data_hist, resonant_hist, *nonreson_list):
         max_val = h.GetMaximum()
         if max_val != 0:
             h.Scale(1.0 / max_val)
@@ -16,8 +16,6 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, title, save_path):
     data_hist.SetTitle(title)
 
     resonant_hist.SetLineWidth(3)
-
-    nonreson_list = [nonreson_hists[key] for key in nonreson_hists]
 
     for hist in nonreson_list:
         hist.SetLineWidth(3)
