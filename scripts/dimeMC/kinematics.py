@@ -44,7 +44,7 @@ def get_particles(file_path):
     for entry in tree:
         event_pions = []
         for i in range(entry.ntrk):
-            if abs(entry.produced_id[i]) == 211:  # Pion
+            if abs(entry.produced_id[i]) == 211 or abs(entry.produced_id[i]) == 321:  # Pion or Kaon
                 px = entry.produced_px[i]
                 py = entry.produced_py[i]
                 pz = entry.produced_pz[i]
