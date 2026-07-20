@@ -2,13 +2,12 @@
 
 import ROOT
 import sys
-import math
 
 from pathlib import Path
-import numpy as np
 
 sys.path.append(str(Path(__file__).parent.parent / "utilities"))
-from cuts_string import dime_fltr, data_fltr #type: ignore
+from arg_handler import get_args_joint #type: ignore
+from plotter import plot_joint #type: ignore
 
 # Making sure graphs don't open and annoy me
 ROOT.gROOT.SetBatch(True)
@@ -40,7 +39,7 @@ double ComputeTotalEtaPxPyPzE(int ntrk, const Tid& id, const Tpx& px, const Tpy&
 """)
 
 
-def eta_together(data, resonant, nonresonant, save_path, title):
+def eta_together(data, resonant, nonresonant):
     nbins = 50
     xmin = -5
     xmax = 5
@@ -60,64 +59,17 @@ def eta_together(data, resonant, nonresonant, save_path, title):
         return df.Histo1D((histname, histname, nbins, xmin, xmax), "eta_val")
 
     resonant_hist = make_hist(resonant, "eta_reson")
-    nonreson_hist = make_hist(nonresonant, "eta_nonreson")
+    nonreson_hists = {}
+    for key in nonresonant:
+        nonreson_hists[key] = make_hist(nonresonant[key], f"{key}_eta_nonreson")
 
-    data_hist = data_hist.GetValue()
-    resonant_hist = resonant_hist.GetValue()
-    nonreson_hist = nonreson_hist.GetValue()
-
-    for h in (data_hist, resonant_hist, nonreson_hist):
-        max_val = h.GetMaximum()
-        if max_val != 0:
-            h.Scale(1.0 / max_val)
-
-    data_hist.SetLineColor(ROOT.kBlue)
-    data_hist.SetLineWidth(3)
-    data_hist.SetTitle(title)
-
-    resonant_hist.SetLineColor(ROOT.kGreen + 2)
-    resonant_hist.SetLineWidth(3)
-
-    nonreson_hist.SetLineColor(ROOT.kRed)
-    nonreson_hist.SetLineWidth(3)
-
-    ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, nonreson_hist))
-    data_hist.SetMaximum(ymax * 1.1)
-
-    c = ROOT.TCanvas("c", "c", 1600, 1200)
-    nonreson_hist.Draw("HIST")
-    resonant_hist.Draw("HIST SAME")
-    data_hist.Draw("HIST SAME")
-
-    legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.9)
-    legend.AddEntry(data_hist, "Data", "l")
-    legend.AddEntry(resonant_hist, "DimeMC Resonant", "l")
-    legend.AddEntry(nonreson_hist, "DimeMC Nonresonant", "l")
-    legend.Draw()
-
-    c.Draw()
-    c.SaveAs(str(save_path))
+    return data_hist, resonant_hist, nonreson_hists
 
 
 def main():
-    if len(sys.argv) < 6:
-        print("Error: Expected inputs")
-        print("[data] [dime resonant] [dime nonresonant] [save folder] [title]")
-        sys.exit(1)
-
-    data_file = Path(sys.argv[1])
-    resonant_file = Path(sys.argv[2])
-    nonresonant_file = Path(sys.argv[3])
-    save_path = Path(sys.argv[4])
-    title = sys.argv[5]
-
-    save_path.parent.mkdir(parents=True, exist_ok=True)
-
-    data = ROOT.RDataFrame("tree", str(data_file)).Filter(data_fltr())
-    resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(dime_fltr())
-    nonreson = ROOT.RDataFrame("particles", str(nonresonant_file)).Filter(dime_fltr())
-    
-    eta_together(data, resonant, nonreson, save_path, title)
+    data, resonant, nonreson, save_path, title = get_args_joint(sys.argv)
+    data_hist, resonant_hist, nonreson_hists = eta_together(data, resonant, nonreson)
+    plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title)
     
 
 if __name__ == '__main__':
