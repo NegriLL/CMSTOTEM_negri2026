@@ -1,8 +1,13 @@
-# Defining basic constraints
+# Define number of runs
+simulated_runs = 10000
 
+# Define productions here
+productions = ["phi", "rho"]
+
+# Defining basic constraints
 wildcard_constraints:
-    dime_suffix="resonant|nonreson",
-    suffix="D|P|A"
+    suffix="D|P|A",
+    production="|".join(productions)
 
 fortran_files = {
     "resonant": "dimeMC/resonant/dimemcv1.07_vsm.f",
@@ -18,7 +23,10 @@ suffix_map = {
 # General rule to generate graphs. This can be edited to accomodate new stuff
 rule all:
     input:
-        directory("plots/dimeMC/kinematics_combined"),
+        expand(
+            "plots/dimeMC/kinematics_combined/{production}",
+            production=productions,
+        ),
         expand(
             "plots/joint/{graph}_{config}.png",
             graph=["eta", "pt", "invmass", "proton_angle"],
@@ -27,35 +35,75 @@ rule all:
 
 
 # Simulation rules
-rule simulate:
+rule simulate_resonant:
     input:
-        fortran=lambda wildcards: fortran_files[wildcards.dime_suffix],
+        fortran=fortran_files["resonant"],
         script="scripts/jobs/run_simulation.sh"
+    params:
+        num_runs=simulated_runs
     output:
-        "dimeMC/{dime_suffix}/exrec.dat"
+        "dimeMC/resonant/exrec.dat"
+    shadow: "copy-minimal"
     shell:
-        "./{input.script} {input.fortran}"
+        # no production argument for the resonant simulation
+        "./{input.script} {input.fortran} {params.num_runs}"
 
 
-rule exrec_to_tree:
+rule simulate_nonreson:
     input:
-        data="dimeMC/{dime_suffix}/exrec.dat",
+        fortran=fortran_files["nonreson"],
+        script="scripts/jobs/run_simulation.sh"
+    params:
+        num_runs=simulated_runs
+    output:
+        "dimeMC/nonreson/{production}_exrec.dat"
+    shadow: "copy-minimal"
+    shell:
+        "./{input.script} {input.fortran} {params.num_runs} {wildcards.production}"
+
+
+rule exrec_to_tree_resonant:
+    input:
+        data="dimeMC/resonant/exrec.dat",
         script="scripts/dimeMC/exrec_to_root.py"
     output:
-        "data/dimeMC/exrec_{dime_suffix}_A.root"
+        "data/dimeMC/resonant_A.root"
     log:
-        "logs/exrec_to_tree_{dime_suffix}_A.log"
+        "logs/exrec_to_tree_resonant_A.log"
     shell:
         "python3 {input.script} {input.data} {output} &> {log}"
 
 
-rule split_dimeMC:
+rule exrec_to_tree_nonreson:
     input:
-        data="data/dimeMC/exrec_{dime_suffix}_A.root",
+        data="dimeMC/nonreson/{production}_exrec.dat",
+        script="scripts/dimeMC/exrec_to_root.py"
+    output:
+        "data/dimeMC/{production}_A.root"
+    log:
+        "logs/exrec_to_tree_nonreson_{production}_A.log"
+    shell:
+        "python3 {input.script} {input.data} {output} &> {log}"
+
+
+rule split_dimeMC_resonant:
+    input:
+        data="data/dimeMC/resonant_A.root",
         script="scripts/dimeMC/split.py"
     output:
-        "data/dimeMC/exrec_{dime_suffix}_D.root",
-        "data/dimeMC/exrec_{dime_suffix}_P.root"
+        "data/dimeMC/resonant_D.root",
+        "data/dimeMC/resonant_P.root"
+    shell:
+        "python3 {input.script} {input.data}"
+
+
+rule split_dimeMC_nonreson:
+    input:
+        data="data/dimeMC/{production}_A.root",
+        script="scripts/dimeMC/split.py"
+    output:
+        "data/dimeMC/{production}_D.root",
+        "data/dimeMC/{production}_P.root"
     shell:
         "python3 {input.script} {input.data}"
 
@@ -63,13 +111,13 @@ rule split_dimeMC:
 # DimeMC scripts rules
 rule kinematic_scripts:
     input:
-        data_reson="data/dimeMC/exrec_resonant_A.root",
-        data_nonre="data/dimeMC/exrec_nonreson_A.root",
+        data_reson="data/dimeMC/resonant_A.root",
+        data_nonre="data/dimeMC/{production}_A.root",
         script="scripts/dimeMC/kinematics.py"
     output:
-        directory("plots/dimeMC/kinematics_combined")
+        directory("plots/dimeMC/kinematics_combined/{production}")
     log:
-        "logs/kinematic_scripts.log"
+        "logs/kinematic_scripts_{production}.log"
     shell:
         "python3 {input.script} {input.data_reson} {input.data_nonre} {output} &> {log}"
 
@@ -116,55 +164,54 @@ rule add_kinematics:
 rule inv_mass_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/exrec_resonant_{suffix}.root",
-        dimeMC_nonre="data/dimeMC/exrec_nonreson_{suffix}.root",
+        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/invariant_mass_histogram.py"
     output:
         "plots/joint/invmass_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
 
 
 rule pt_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/exrec_resonant_{suffix}.root",
-        dimeMC_nonre="data/dimeMC/exrec_nonreson_{suffix}.root",
+        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/pt_histogram.py"
     output:
         "plots/joint/pt_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
 
 
 rule eta_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/exrec_resonant_{suffix}.root",
-        dimeMC_nonre="data/dimeMC/exrec_nonreson_{suffix}.root",
+        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/eta_histogram.py"
     output:
         "plots/joint/eta_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
 
 
-# Smallest angle between the outgoing protons
 rule angles_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/exrec_resonant_{suffix}.root",
-        dimeMC_nonre="data/dimeMC/exrec_nonreson_{suffix}.root",
+        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/proton_angles_histogram.py"
     output:
         "plots/joint/proton_angle_{suffix}.png"
     params:
         title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {input.dimeMC_nonre} {output} '{params.title}'"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
