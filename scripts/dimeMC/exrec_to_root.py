@@ -297,13 +297,12 @@ if __name__ == "__main__":
         output_path = Path(sys.argv[2])
     elif len(sys.argv) == 1:
         input_path = Path(__file__).parent.parent.parent / "dimeMC" / "resonant" / "exrec.dat"
-        output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "exrec_resonant.root"
+        output_path = Path(__file__).parent.parent.parent / "data" / "dimeMC" / "resonant.root"
     else:
         print("Incorrect number of input values. Expected 0 or 2")
         sys.exit(1)
 
     # make sure path exists
-    input_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
     if not input_path.exists():
