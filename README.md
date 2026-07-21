@@ -7,7 +7,7 @@ Instructions
 2. Download DimeMC and save it to the `dimeMC/` folder.
     - `dimemc` goes in `dimeMC/nonreson`
     - `dimemc_vsm` goes in `dimeMC/resonant`
-3. It's a good idea to increase the precision of DimeMC output. Go into the code and change the format lines around ~1260 to `E25.16`
+3. It's a good idea to increase the precision of DimeMC output. Go into the code and change the format lines around ~1260 to `E25.16`. This might have already been done when you are reading this in the future.
 4. You must add the following lines to DimeMC (both versions) in the nev (run count) line so fortran can take the number of runs directly from the command line.
 ```fortran
 CALL GET_COMMAND_ARGUMENT(1, arg)
@@ -17,11 +17,12 @@ READ(arg, *) nev        ! no. of unweighted events generated to event record
 ```shell
 python -m pip download -r requirements.txt
 ```
-6. If there are problems (and there will be), email me.
-7. Everything can be run using snakemake rules. You can try running the following to get all the graphs:
+6. Everything can be run using snakemake rules. You can try running the following to get all the graphs:
 ```shell
 snakemake --cores 8
 ```
+7. Cuts can be edited in the config.yaml file for convenience.
+8. If there are problems (and there will be), email me.
 
 Possible errors:
 - If you get a permission denied error when trying to run job.sh, try running
