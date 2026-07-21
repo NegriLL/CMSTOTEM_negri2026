@@ -158,7 +158,7 @@ rule inv_mass_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
-        script="scripts/joint/invariant_mass_histogram.py"
+        script="scripts/joint/invariant_mass_histogram.py",
         config_file="config.yaml"
     output:
         "plots/joint/invmass_{suffix}.png"
@@ -173,7 +173,7 @@ rule pt_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
-        script="scripts/joint/pt_histogram.py"
+        script="scripts/joint/pt_histogram.py",
         config_file="config.yaml"
     output:
         "plots/joint/pt_{suffix}.png"
@@ -188,7 +188,7 @@ rule eta_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
-        script="scripts/joint/eta_histogram.py"
+        script="scripts/joint/eta_histogram.py",
         config_file="config.yaml"
     output:
         "plots/joint/eta_{suffix}.png"
@@ -203,7 +203,7 @@ rule angles_combined:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
-        script="scripts/joint/proton_angles_histogram.py"
+        script="scripts/joint/proton_angles_histogram.py",
         config_file="config.yaml"
     output:
         "plots/joint/proton_angle_{suffix}.png"
