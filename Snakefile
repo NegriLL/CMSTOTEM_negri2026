@@ -159,6 +159,7 @@ rule inv_mass_combined:
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/invariant_mass_histogram.py",
+        plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
         "plots/joint/invmass_{suffix}.png"
@@ -174,6 +175,7 @@ rule pt_combined:
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/pt_histogram.py",
+        plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
         "plots/joint/pt_{suffix}.png"
@@ -189,6 +191,7 @@ rule eta_combined:
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/eta_histogram.py",
+        plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
         "plots/joint/eta_{suffix}.png"
@@ -204,6 +207,7 @@ rule angles_combined:
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
         dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
         script="scripts/joint/proton_angles_histogram.py",
+        plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
         "plots/joint/proton_angle_{suffix}.png"
