@@ -1,24 +1,16 @@
-# Define number of runs
-simulated_runs = 10000
+# Load configuration
+configfile: "config.yaml"
 
-# Define productions here
-productions = ["phi", "rho"]
+simulated_runs = config["simulated_runs"]
+productions = config["productions"]
+fortran_files = config["fortran_files"]
+suffix_map = config["suffix_map"]
 
 # Defining basic constraints
 wildcard_constraints:
     suffix="D|P|A",
     production="|".join(productions)
 
-fortran_files = {
-    "resonant": "dimeMC/resonant/dimemcv1.07_vsm.f",
-    "nonreson": "dimeMC/nonreson/dimemcv1.07.f",
-}
-
-suffix_map = {
-    "D": "Diagonal",
-    "A": "All",
-    "P": "Parallel",
-}
 
 # General rule to generate graphs. This can be edited to accomodate new stuff
 rule all:
