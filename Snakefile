@@ -9,6 +9,7 @@ suffix_map = config["suffix_map"]
 # Defining basic constraints
 wildcard_constraints:
     suffix="D|P|A",
+    cuts_folder="cut|raw",
     production="|".join(productions)
 
 
@@ -20,7 +21,8 @@ rule all:
             production=productions,
         ),
         expand(
-            "plots/joint/{graph}_{config}.png",
+            "plots/joint/{cuts_folder}/{graph}_{config}.png",
+            cuts_folder=["cut", "raw"],
             graph=["eta", "pt", "invmass", "proton_angle"],
             config=["D", "P", "A"],
         )
@@ -162,11 +164,12 @@ rule inv_mass_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/invmass_{suffix}.png"
+        "plots/joint/{cuts_folder}/invmass_{suffix}.png"
     params:
-        title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})"
+        title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})",
+        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
 
 
 rule pt_combined:
@@ -178,11 +181,12 @@ rule pt_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/pt_{suffix}.png"
+        "plots/joint/{cuts_folder}/pt_{suffix}.png"
     params:
-        title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})"
+        title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})",
+        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
 
 
 rule eta_combined:
@@ -194,11 +198,12 @@ rule eta_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/eta_{suffix}.png"
+        "plots/joint/{cuts_folder}/eta_{suffix}.png"
     params:
-        title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})"
+        title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})",
+        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
 
 
 rule angles_combined:
@@ -210,8 +215,9 @@ rule angles_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/proton_angle_{suffix}.png"
+        "plots/joint/{cuts_folder}/proton_angle_{suffix}.png"
     params:
-        title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})"
+        title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})",
+        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
