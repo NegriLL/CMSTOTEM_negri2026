@@ -1,0 +1,33 @@
+#-------------------------------- Snakefile -------------------------------#
+# Number of DimeMC runs to simulate
+simulated_runs: 20000
+
+# Nonresonant particle productions
+productions:
+  - phi
+  - rho
+
+# DimeMC Files
+fortran_files:
+  resonant: "dimeMC/resonant/dimemcv1.07_vsm.f"
+  nonreson: "dimeMC/nonreson/dimemcv1.07.f"
+
+# D/P/A suffix map
+suffix_map:
+  D: "Diagonal"
+  A: "All"
+  P: "Parallel"
+
+#-------------------------------- Cuts -------------------------------#
+acceptance:
+  py_min: 0.18
+  py_max: 0.68
+ 
+mass:
+  rho_mass: 0.770
+  mass_interval: 0.062
+ 
+momentum:
+  px_cut: 0.130
+  py_cut: 0.060
+  p_cut: 1
