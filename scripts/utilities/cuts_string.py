@@ -1,11 +1,24 @@
-proton_py_min = 0.18
-proton_py_max = 0.68
-rho_mass = 0.770
-mass_interval = 0.062
+import yaml
+from pathlib import Path
+ 
+CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
 
-px_cut = 0.130
-py_cut = 0.060
-p_cut = 1
+def load_config(path=CONFIG_PATH):
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
+
+config = load_config()
+
+proton_py_min = config["acceptance"]["py_min"]
+proton_py_max = config["acceptance"]["py_max"]
+
+rho_mass = config["mass"]["rho_mass"]
+mass_interval = config["mass"]["mass_interval"]
+
+px_cut = config["momentum"]["px_cut"]
+py_cut = config["momentum"]["py_cut"]
+p_cut = config["momentum"]["p_cut"]
+
 mass_min = rho_mass - mass_interval
 mass_max = rho_mass + mass_interval
 
@@ -30,3 +43,18 @@ def data_fltr():
                     f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
                     f"2.0 < inv_mass && inv_mass < 2.5")
     return fltr_data
+
+
+if __name__ == "__main__":
+    print()
+    print(f"CONFIG PATH   : {CONFIG_PATH}")
+    print(f"proton_py_min = {proton_py_min:.3f}")
+    print(f"proton_py_max = {proton_py_max:.3f}")
+    print(f"rho_mass      = {rho_mass:.3f}")
+    print(f"mass_interval = {mass_interval:.3f}")
+    print(f"px_cut        = {px_cut:.3f}")
+    print(f"py_cut        = {py_cut:.3f}")
+    print(f"p_cut         = {p_cut:.3f}")
+    print(f"mass_min      = {mass_min:.3f}")
+    print(f"mass_max      = {mass_max:.3f}")
+    print()
