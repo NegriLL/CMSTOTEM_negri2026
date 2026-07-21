@@ -16,9 +16,11 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     data_hist.SetTitle(title)
 
     resonant_hist.SetLineWidth(3)
+    resonant_hist.SetLineStyle(2)
 
     for hist in nonreson_list:
         hist.SetLineWidth(3)
+        hist.SetLineStyle(3)
 
     ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, *nonreson_list))
     data_hist.SetMaximum(ymax * 1.1)
