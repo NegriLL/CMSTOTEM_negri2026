@@ -14,6 +14,8 @@ proton_py_max = config["acceptance"]["py_max"]
 
 rho_mass = config["mass"]["rho_mass"]
 mass_interval = config["mass"]["mass_interval"]
+inv_mass_min = config["mass"]["inv_mass_min"]
+inv_mass_max = config["mass"]["inv_mass_max"]
 
 px_cut = config["momentum"]["px_cut"]
 py_cut = config["momentum"]["py_cut"]
@@ -29,7 +31,7 @@ def dime_fltr():
     )
     fltr_mass = (f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
                     f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max})) && "
-                    f"2.0 < inv_mass && inv_mass < 2.5")
+                    f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
     return f"{fltr_acceptance} && {fltr_mass}"
 
 def data_fltr():
@@ -41,7 +43,7 @@ def data_fltr():
                     f"fabs(trk_p[3]) < {p_cut} && "
                     f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
                     f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
-                    f"2.0 < inv_mass && inv_mass < 2.5")
+                    f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
     return fltr_data
 
 
@@ -57,4 +59,6 @@ if __name__ == "__main__":
     print(f"p_cut         = {p_cut:.3f}")
     print(f"mass_min      = {mass_min:.3f}")
     print(f"mass_max      = {mass_max:.3f}")
+    print(f"inv_mass_min  = {inv_mass_min:.3f}")
+    print(f"inv_mass_max  = {inv_mass_max:.3f}")
     print()

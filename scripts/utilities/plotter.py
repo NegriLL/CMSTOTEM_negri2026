@@ -1,4 +1,12 @@
 import ROOT
+import yaml
+from pathlib import Path
+
+CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
+
+def load_config(path=CONFIG_PATH):
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
 
 def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     data_hist = data_hist.GetValue()
@@ -10,21 +18,33 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
         if max_val != 0:
             h.Scale(1.0 / max_val)
 
-    data_hist.SetLineWidth(3)
-    data_hist.SetLineStyle(1)
-    data_hist.SetTitle(title)
+    config = load_config()
+    line_width = config["line_width"]
+    line_style_data = config["line_style_data"]
+    line_style_resonant = config["line_style_resonant"]
+    line_style_nonresonant = config["line_style_nonresonant"]
+    image_size_x = config["image_size"]["x"]
+    image_size_y = config["image_size"]["y"]
+    legend_x1 = config["legend"]["x1"]
+    legend_y1 = config["legend"]["y1"]
+    legend_x2 = config["legend"]["x2"]
+    legend_y2 = config["legend"]["y2"]
 
-    resonant_hist.SetLineWidth(3)
-    resonant_hist.SetLineStyle(9)
+    data_hist.SetTitle(title)
+    data_hist.SetLineWidth(line_width)
+    data_hist.SetLineStyle(line_style_data)
+
+    resonant_hist.SetLineWidth(line_width)
+    resonant_hist.SetLineStyle(line_style_resonant)
 
     for hist in nonreson_list:
-        hist.SetLineWidth(3)
-        hist.SetLineStyle(7)
+        hist.SetLineWidth(line_width)
+        hist.SetLineStyle(line_style_nonresonant)
 
     ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, *nonreson_list))
     data_hist.SetMaximum(ymax * 1.1)
 
-    c = ROOT.TCanvas("c", "c", 1600, 1200)
+    c = ROOT.TCanvas("c", "c", image_size_x, image_size_y)
     
     ROOT.gStyle.SetPalette(ROOT.kBlueRedYellow)
     data_hist.Draw("HIST")
@@ -32,7 +52,11 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
         hist.Draw("HIST PLC SAME")
     resonant_hist.Draw("HIST PLC SAME")
 
-    legend = ROOT.TLegend(0.7, 0.7, 0.9, 0.9)
+    legend = ROOT.TLegend(legend_x1,
+                          legend_y1,
+                          legend_x2,
+                          legend_y2)
+    
     legend.AddEntry(data_hist, "Data", "l")
     legend.AddEntry(resonant_hist, "DimeMC Resonant", "l")
     for key, hist in zip(nonreson_hists, nonreson_list):

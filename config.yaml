@@ -1,6 +1,6 @@
 #-------------------------------- Snakefile -------------------------------#
 # Number of DimeMC runs to simulate
-simulated_runs: 20000
+simulated_runs: 300
 
 # Nonresonant particle productions
 productions:
@@ -26,8 +26,31 @@ acceptance:
 mass:
   rho_mass: 0.770
   mass_interval: 0.062
+  inv_mass_min: 2.0
+  inv_mass_max: 2.5
  
 momentum:
   px_cut: 0.130
   py_cut: 0.060
   p_cut: 1
+
+#--------------------------- Graph Options ---------------------------#
+# Style
+color_palette: ROOT.kBlueRedYellow
+
+# For more information: https://root.cern.ch/doc/v636/classTAttLine.html
+line_width: 3
+line_style_data: 1           # Line
+line_style_resonant: 9       # Thick dotted
+line_style_nonresonant: 7    # Less thick dotted
+
+# Formatting
+image_size:
+  x: 1600
+  y: 1200
+
+legend:
+  x1: 0.7
+  y1: 0.7
+  x2: 0.9
+  y2: 0.9
