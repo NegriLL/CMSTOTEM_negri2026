@@ -1,12 +1,11 @@
+#!/usr/bin/env python3
+
 import ROOT
-import yaml
+import sys
 from pathlib import Path
 
-CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
-
-def load_config(path=CONFIG_PATH):
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
+sys.path.append(str(Path(__file__).parent.parent / "utilities"))
+from load_config import load_config #type: ignore
 
 def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     data_hist = data_hist.GetValue()

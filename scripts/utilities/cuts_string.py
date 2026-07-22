@@ -1,11 +1,10 @@
-import yaml
+#!/usr/bin/env python3
+
+import sys
 from pathlib import Path
  
-CONFIG_PATH = Path(__file__).parent.parent.parent / "config.yaml"
-
-def load_config(path=CONFIG_PATH):
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
+sys.path.append(str(Path(__file__).parent.parent / "utilities"))
+from load_config import load_config #type: ignore
 
 config = load_config()
 
