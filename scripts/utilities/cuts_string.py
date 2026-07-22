@@ -48,7 +48,6 @@ def data_fltr():
 
 if __name__ == "__main__":
     print()
-    print(f"CONFIG PATH   : {CONFIG_PATH}")
     print(f"proton_py_min = {proton_py_min:.3f}")
     print(f"proton_py_max = {proton_py_max:.3f}")
     print(f"rho_mass      = {rho_mass:.3f}")
