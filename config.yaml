@@ -41,8 +41,8 @@ color_palette: ROOT.kBlueRedYellow
 # For more information: https://root.cern.ch/doc/v636/classTAttLine.html
 line_width: 3
 line_style_data: 1           # Line
-line_style_resonant: 9       # Thick dotted
-line_style_nonresonant: 7    # Less thick dotted
+line_style_resonant: 9       # Dashed Longest
+line_style_nonresonant: 7    # Dashed
 
 # Formatting
 image_size:
