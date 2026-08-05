@@ -35,7 +35,7 @@ rule simulate_resonant:
         fortran=fortran_files["resonant"],
         script="scripts/jobs/run_simulation.sh"
     params:
-        num_runs=simulated_runs
+        num_runs=simulated_runs,
         resonant_production=config["resonant_production"]
     output:
         "dimeMC/resonant/exrec.dat"
