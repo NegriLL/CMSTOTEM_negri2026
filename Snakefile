@@ -41,7 +41,6 @@ rule simulate_resonant:
         "dimeMC/resonant/exrec.dat"
     shadow: "copy-minimal"
     shell:
-        # no nonreson_production argument for the resonant simulation
         "./{input.script} {input.fortran} {params.num_runs} {params.resonant_production}"
 
 
