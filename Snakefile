@@ -2,7 +2,8 @@
 configfile: "config.yaml"
 
 simulated_runs = config["simulated_runs"]
-productions = config["productions"]
+resonant_production = config["resonant_production"]
+nonreson_productions = config["nonreson_productions"]
 fortran_files = config["fortran_files"]
 suffix_map = config["suffix_map"]
 
@@ -10,15 +11,15 @@ suffix_map = config["suffix_map"]
 wildcard_constraints:
     suffix="D|P|A",
     cuts_folder="cut|raw",
-    production="|".join(productions)
+    nonreson_production="|".join(nonreson_productions)
 
 
 # General rule to generate graphs. This can be edited to accomodate new stuff
 rule all:
     input:
         expand(
-            "plots/dimeMC/kinematics_combined/{production}",
-            production=productions,
+            "plots/dimeMC/kinematics_combined/{nonreson_production}",
+            nonreson_production=nonreson_productions,
         ),
         expand(
             "plots/joint/{cuts_folder}/{graph}_{config}.png",
@@ -35,12 +36,13 @@ rule simulate_resonant:
         script="scripts/jobs/run_simulation.sh"
     params:
         num_runs=simulated_runs
+        resonant_production=config["resonant_production"]
     output:
         "dimeMC/resonant/exrec.dat"
     shadow: "copy-minimal"
     shell:
-        # no production argument for the resonant simulation
-        "./{input.script} {input.fortran} {params.num_runs}"
+        # no nonreson_production argument for the resonant simulation
+        "./{input.script} {input.fortran} {params.num_runs} {params.resonant_production}"
 
 
 rule simulate_nonreson:
@@ -50,10 +52,10 @@ rule simulate_nonreson:
     params:
         num_runs=simulated_runs
     output:
-        "dimeMC/nonreson/{production}_exrec.dat"
+        "dimeMC/nonreson/{nonreson_production}_exrec.dat"
     shadow: "copy-minimal"
     shell:
-        "./{input.script} {input.fortran} {params.num_runs} {wildcards.production}"
+        "./{input.script} {input.fortran} {params.num_runs} {wildcards.nonreson_production}"
 
 
 rule exrec_to_tree_resonant:
@@ -70,12 +72,12 @@ rule exrec_to_tree_resonant:
 
 rule exrec_to_tree_nonreson:
     input:
-        data="dimeMC/nonreson/{production}_exrec.dat",
+        data="dimeMC/nonreson/{nonreson_production}_exrec.dat",
         script="scripts/dimeMC/exrec_to_root.py"
     output:
-        "data/dimeMC/{production}_A.root"
+        "data/dimeMC/{nonreson_production}_A.root"
     log:
-        "logs/exrec_to_tree_nonreson_{production}_A.log"
+        "logs/exrec_to_tree_nonreson_{nonreson_production}_A.log"
     shell:
         "python3 {input.script} {input.data} {output} &> {log}"
 
@@ -93,11 +95,11 @@ rule split_dimeMC_resonant:
 
 rule split_dimeMC_nonreson:
     input:
-        data="data/dimeMC/{production}_A.root",
+        data="data/dimeMC/{nonreson_production}_A.root",
         script="scripts/dimeMC/split.py"
     output:
-        "data/dimeMC/{production}_D.root",
-        "data/dimeMC/{production}_P.root"
+        "data/dimeMC/{nonreson_production}_D.root",
+        "data/dimeMC/{nonreson_production}_P.root"
     shell:
         "python3 {input.script} {input.data}"
 
@@ -106,12 +108,12 @@ rule split_dimeMC_nonreson:
 rule kinematic_scripts:
     input:
         data_reson="data/dimeMC/resonant_A.root",
-        data_nonre="data/dimeMC/{production}_A.root",
+        data_nonre="data/dimeMC/{nonreson_production}_A.root",
         script="scripts/dimeMC/kinematics.py"
     output:
-        directory("plots/dimeMC/kinematics_combined/{production}")
+        directory("plots/dimeMC/kinematics_combined/{nonreson_production}")
     log:
-        "logs/kinematic_scripts_{production}.log"
+        "logs/kinematic_scripts_{nonreson_production}.log"
     shell:
         "python3 {input.script} {input.data_reson} {input.data_nonre} {output} &> {log}"
 
@@ -159,7 +161,7 @@ rule inv_mass_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
-        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
+        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/invariant_mass_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
@@ -176,7 +178,7 @@ rule pt_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
-        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
+        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/pt_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
@@ -193,7 +195,7 @@ rule eta_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
-        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
+        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/eta_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
@@ -210,7 +212,7 @@ rule angles_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
-        dimeMC_nonre=expand("data/dimeMC/{production}_{{suffix}}.root", production=productions),
+        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/proton_angles_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
