@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent / "utilities"))
-from load_config import load_config #type: ignore
+from load_config import load_config
 
 def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     data_hist = data_hist.GetValue()
