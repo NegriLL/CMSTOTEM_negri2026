@@ -126,7 +126,7 @@ def read_file(input_file, output_file):
                     primary_particles.append([current_event, particle_id, px, py, pz, e, m])
                     
                     line_idx += 1
-                ntrk = num_particles - 6
+                ntrk = num_particles - 6 # two incoming, two outgoing, and two primary particles
                 ntrk_list.append(ntrk)
                 event_numbers.append(current_event)
 
