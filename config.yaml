@@ -1,9 +1,13 @@
 #-------------------------------- Snakefile -------------------------------#
 # Number of DimeMC runs to simulate
-simulated_runs: 300
+simulated_runs: 30000
+
+# Resonant particle productions
+resonant_production:
+  phi
 
 # Nonresonant particle productions
-productions:
+nonreson_productions:
   - phi
   - rho
 
