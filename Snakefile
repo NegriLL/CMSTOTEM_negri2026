@@ -38,7 +38,7 @@ rule simulate_resonant:
         num_runs=simulated_runs,
         resonant_production=config["resonant_production"]
     output:
-        "dimeMC/resonant/{params.resonant_production}_exrec.dat"
+        "dimeMC/resonant/exrec.dat"
     shadow: "copy-minimal"
     shell:
         "./{input.script} {input.fortran} {params.num_runs} {params.resonant_production}"
