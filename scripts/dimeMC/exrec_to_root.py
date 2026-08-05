@@ -147,9 +147,8 @@ def read_file(input_file, output_file):
                     # Store produced particle data with event number and id
                     produced_particles.append([current_event, particle_id, px, py, pz, e, m])
 
-                    if abs(particle_id) == 211 or abs(particle_id) == 321:
-                        temp_vec = ROOT.Math.PxPyPzEVector(px, py, pz, e)
-                        particle_vec = particle_vec + temp_vec
+                    temp_vec = ROOT.Math.PxPyPzEVector(px, py, pz, e)
+                    particle_vec = particle_vec + temp_vec
 
                     line_idx += 1
                 
