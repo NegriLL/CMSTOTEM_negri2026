@@ -22,7 +22,7 @@ rule all:
             nonreson_production=nonreson_productions,
         ),
         expand(
-            "plots/joint/{cuts_folder}/{graph}_{config}.png",
+            f"plots/joint_{resonant_production}/{{cuts_folder}}/{{graph}}_{{config}}.png",
             cuts_folder=["cut", "raw"],
             graph=["eta", "pt", "invmass", "proton_angle"],
             config=["D", "P", "A"],
@@ -41,7 +41,7 @@ rule simulate_resonant:
         "dimeMC/resonant/exrec.dat"
     shadow: "copy-minimal"
     shell:
-        "./{input.script} {input.fortran} {params.num_runs} {params.resonant_production}"
+        "./{input.script} {input.fortran} {params.num_runs} {params.resonant_production} ; "
         "mv dimeMC/resonant/{params.resonant_production}_exrec.dat dimeMC/resonant/exrec.dat"
 
 
@@ -166,7 +166,7 @@ rule inv_mass_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/{cuts_folder}/invmass_{suffix}.png"
+        "plots/joint_{resonant_production}/{cuts_folder}/invmass_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -183,7 +183,7 @@ rule pt_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/{cuts_folder}/pt_{suffix}.png"
+        f"plots/joint_{resonant_production}/{{cuts_folder}}/pt_{{suffix}}.png"
     params:
         title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -200,7 +200,7 @@ rule eta_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/{cuts_folder}/eta_{suffix}.png"
+        f"plots/joint_{resonant_production}/{{cuts_folder}}/eta_{{suffix}}.png"
     params:
         title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -217,7 +217,7 @@ rule angles_combined:
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint/{cuts_folder}/proton_angle_{suffix}.png"
+        f"plots/joint_{resonant_production}/{{cuts_folder}}/proton_angle_{{suffix}}.png"
     params:
         title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
