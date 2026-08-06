@@ -19,7 +19,7 @@ def pt_together(data, resonant, nonreson):
     xmax = 2
 
     model = ("h", "Normalized Data and DimeMC pT Comparison", nbins, xmin, xmax)
-    pt_calc = "sqrt(pow(Sum(produced_px[abs(produced_id) == 211]), 2) + pow(Sum(produced_py[abs(produced_id) == 211]), 2))"
+    pt_calc = "sqrt(pow(Sum(produced_px), 2) + pow(Sum(produced_py), 2))"
 
     resonant = resonant.Define("pt", pt_calc)
     for key in nonreson:
