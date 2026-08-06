@@ -29,10 +29,8 @@ template <typename Tid, typename Tpx, typename Tpy, typename Tpz, typename Te>
 double ComputeTotalEtaPxPyPzE(int ntrk, const Tid& id, const Tpx& px, const Tpy& py, const Tpz& pz, const Te& e) {
     TLorentzVector total;
     for (int i = 0; i < ntrk; i++) {
-        if (std::abs(id[i]) == 211) {
-            TLorentzVector particle(px[i], py[i], pz[i], e[i]);
-            total += particle;
-        }
+        TLorentzVector particle(px[i], py[i], pz[i], e[i]);
+        total += particle;
     }
     return total.Eta();
 }
