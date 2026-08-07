@@ -2,7 +2,7 @@
 configfile: "config.yaml"
 
 simulated_runs = config["simulated_runs"]
-resonant_production = config["resonant_production"]
+resonant_productions = config["resonant_production"]
 nonreson_productions = config["nonreson_productions"]
 fortran_files = config["fortran_files"]
 suffix_map = config["suffix_map"]
@@ -11,21 +11,24 @@ suffix_map = config["suffix_map"]
 wildcard_constraints:
     suffix="D|P|A",
     cuts_folder="cut|raw",
-    nonreson_production="|".join(nonreson_productions)
+    nonreson_production="|".join(nonreson_productions),
+    resonant_production="|".join(resonant_productions)
 
 
 # General rule to generate graphs. This can be edited to accomodate new stuff
 rule all:
     input:
         expand(
-            "plots/dimeMC/kinematics_combined/{nonreson_production}",
+            "plots/dimeMC/kinematics_combined/{resonant_production}/{nonreson_production}",
+            resonant_production=resonant_productions,
             nonreson_production=nonreson_productions,
         ),
         expand(
-            f"plots/joint_{resonant_production}/{{cuts_folder}}/{{graph}}_{{config}}.png",
+            "plots/joint_{resonant_production}/{cuts_folder}/{graph}_{suffix}.png",
+            resonant_production=resonant_productions,
             cuts_folder=["cut", "raw"],
             graph=["eta", "pt", "invmass", "proton_angle"],
-            config=["D", "P", "A"],
+            suffix=["D", "P", "A"],
         )
 
 
@@ -37,10 +40,10 @@ rule simulate_resonant:
     params:
         num_runs=simulated_runs
     output:
-        f"dimeMC/resonant/{resonant_production}_exrec.dat"
+        "dimeMC/resonant/{resonant_production}_exrec.dat"
     shadow: "copy-minimal"
     shell:
-        "./{input.script} {input.fortran} {params.num_runs} {resonant_production}"
+        "./{input.script} {input.fortran} {params.num_runs} {wildcards.resonant_production}"
 
 
 rule simulate_nonreson:
@@ -58,12 +61,12 @@ rule simulate_nonreson:
 
 rule exrec_to_tree_resonant:
     input:
-        data=f"dimeMC/resonant/{resonant_production}_exrec.dat",
+        data="dimeMC/resonant/{resonant_production}_exrec.dat",
         script="scripts/dimeMC/exrec_to_root.py"
     output:
-        f"data/dimeMC/resonant_{resonant_production}_A.root"
+        "data/dimeMC/resonant_{resonant_production}_A.root"
     log:
-        "logs/exrec_to_tree_resonant_A.log"
+        "logs/exrec_to_tree_resonant_{resonant_production}_A.log"
     shell:
         "python3 {input.script} {input.data} {output} &> {log}"
 
@@ -82,11 +85,11 @@ rule exrec_to_tree_nonreson:
 
 rule split_dimeMC_resonant:
     input:
-        data=f"data/dimeMC/resonant_{resonant_production}_A.root",
+        data="data/dimeMC/resonant_{resonant_production}_A.root",
         script="scripts/dimeMC/split.py"
     output:
-        f"data/dimeMC/resonant_{resonant_production}_D.root",
-        f"data/dimeMC/resonant_{resonant_production}_P.root"
+        "data/dimeMC/resonant_{resonant_production}_D.root",
+        "data/dimeMC/resonant_{resonant_production}_P.root"
     shell:
         "python3 {input.script} {input.data}"
 
@@ -105,13 +108,13 @@ rule split_dimeMC_nonreson:
 # DimeMC scripts rules
 rule kinematic_scripts:
     input:
-        data_reson=f"data/dimeMC/resonant_{resonant_production}_A.root",
+        data_reson="data/dimeMC/resonant_{resonant_production}_A.root",
         data_nonre="data/dimeMC/{nonreson_production}_A.root",
         script="scripts/dimeMC/kinematics.py"
     output:
-        directory("plots/dimeMC/kinematics_combined/{nonreson_production}")
+        directory("plots/dimeMC/kinematics_combined/{resonant_production}/{nonreson_production}")
     log:
-        "logs/kinematic_scripts_{nonreson_production}.log"
+        "logs/kinematic_scripts_{resonant_production}_{nonreson_production}.log"
     shell:
         "python3 {input.script} {input.data_reson} {input.data_nonre} {output} &> {log}"
 
@@ -158,13 +161,13 @@ rule add_kinematics:
 rule inv_mass_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
-        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
+        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
+        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
         script="scripts/joint/invariant_mass_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        f"plots/joint_{resonant_production}/{{cuts_folder}}/invmass_{{suffix}}.png"
+        "plots/joint_{resonant_production}/{cuts_folder}/invmass_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -175,13 +178,13 @@ rule inv_mass_combined:
 rule pt_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
-        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
+        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
+        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
         script="scripts/joint/pt_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        f"plots/joint_{resonant_production}/{{cuts_folder}}/pt_{{suffix}}.png"
+        "plots/joint_{resonant_production}/{cuts_folder}/pt_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -192,13 +195,13 @@ rule pt_combined:
 rule eta_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
-        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
+        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
+        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
         script="scripts/joint/eta_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        f"plots/joint_{resonant_production}/{{cuts_folder}}/eta_{{suffix}}.png"
+        "plots/joint_{resonant_production}/{cuts_folder}/eta_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -209,13 +212,13 @@ rule eta_combined:
 rule angles_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
-        dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
+        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
+        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
         script="scripts/joint/proton_angles_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        f"plots/joint_{resonant_production}/{{cuts_folder}}/proton_angle_{{suffix}}.png"
+        "plots/joint_{resonant_production}/{cuts_folder}/proton_angle_{suffix}.png"
     params:
         title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
