@@ -29,7 +29,7 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     legend_x2 = config["legend"]["x2"]
     legend_y2 = config["legend"]["y2"]
 
-    resonant_production = config["resonant_production"]
+    resonant_production = str(save_path.parent.parent).split('_')[-1]
 
     data_hist.SetTitle(title)
     data_hist.SetLineWidth(line_width)
