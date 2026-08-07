@@ -29,6 +29,8 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
     legend_x2 = config["legend"]["x2"]
     legend_y2 = config["legend"]["y2"]
 
+    resonant_production = config["resonant_production"]
+
     data_hist.SetTitle(title)
     data_hist.SetLineWidth(line_width)
     data_hist.SetLineStyle(line_style_data)
@@ -57,9 +59,9 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
                           legend_y2)
     
     legend.AddEntry(data_hist, "Data", "l")
-    legend.AddEntry(resonant_hist, "DimeMC Resonant", "l")
+    legend.AddEntry(resonant_hist, f"DimeMC Resonant {resonant_production}", "l")
     for key, hist in zip(nonreson_hists, nonreson_list):
-        legend.AddEntry(hist, f"DimeMC {key}", "l")
+        legend.AddEntry(hist, f"DimeMC Nonresonant {key}", "l")
     legend.Draw()
 
     c.Draw()
