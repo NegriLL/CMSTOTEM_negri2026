@@ -46,7 +46,7 @@ def dime_fltr(production):
 def data_fltr():
     try:
         mass_min = mass_cuts["rho"]["mass"] - mass_cuts["rho"]["interval"]
-        mass_max = mass_cuts["rho"]["mass"] - mass_cuts["rho"]["interval"]
+        mass_max = mass_cuts["rho"]["mass"] + mass_cuts["rho"]["interval"]
     except KeyError:
         rho_mass = 0.770
         interval = 0.062
@@ -60,7 +60,7 @@ def data_fltr():
                  f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
     
     fltr_p = (f"fabs(trk_p[0]) < {p_cut} && "
-              f"fabs(trk_p[1]) < {p_cut} && " # remove these for comparison with dimemc
+              f"fabs(trk_p[1]) < {p_cut} && "
               f"fabs(trk_p[2]) < {p_cut} && "
               f"fabs(trk_p[3]) < {p_cut}")
 
