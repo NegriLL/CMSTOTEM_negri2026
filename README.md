@@ -7,32 +7,20 @@ Instructions
 2. Download DimeMC and save it to the `dimeMC/` folder.
     - `dimemc` goes in `dimeMC/nonreson`
     - `dimemc_vsm` goes in `dimeMC/resonant`
-3. It's a good idea to increase the precision of DimeMC output. Go into the code and change the format lines around ~1260 to `E25.16`. This might have already been done when you are reading this in the future.
-4. You must substitute the following lines to DimeMC (both versions) so it can get arguments from the command line.
-    - Where nev (run count) is declared
-    ```fortran
-    CALL GET_COMMAND_ARGUMENT(1, arg)
-    READ(arg, *) nev        ! no. of unweighted events generated to event record
-    ```
-    - Where pflag is declared
-    ```fortran
-    CALL GET_COMMAND_ARGUMENT(2, pflag)    ! Process generated - see preamble for options
-    ```
-    - You must also add the following variable to the `character` declaration at the very beginning of the program
-    ```fortran
-    character prefix*50,fsp*10,order*10,pflag*10,fsi*10,formf*10
-     &,ppbar*10,output*10,mregge*10,cuts*10,unw*10, arg*10
-    ```
-5. Create a virtual environment. Check `requirements.txt`. To install the requirements automatically, you can try running
+3. Create a virtual environment. Check `requirements.txt`. To install the requirements automatically, you can try running
 ```shell
 python -m pip download -r requirements.txt
 ```
-6. Everything can be run using snakemake rules. You can try running the following to get all the graphs:
+4. Run `scripts/utilities/dime_patcher.py` to update dimeMC for compatibility. This only has to be done once. The changes are as follows:
+    - Accept `nev` (number of events) from commmand line arguments
+    - Accept `pflag` (particle production type) from command line
+    - Increase precision of output
+5. Data pipeline is done through snakemake. You can try running the following to get all the graphs:
 ```shell
 snakemake --cores all
 ```
-7. Cuts can be edited in the config.yaml file for convenience.
-8. If there are problems (and there will be), email me.
+6. Cuts can be edited in the config.yaml file for convenience.
+7. If there are problems (and there will be), email me.
 
 Possible errors:
 - If you get a permission denied error when trying to run job.sh, try running
