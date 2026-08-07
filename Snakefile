@@ -35,14 +35,12 @@ rule simulate_resonant:
         fortran=fortran_files["resonant"],
         script="scripts/jobs/run_simulation.sh"
     params:
-        num_runs=simulated_runs,
-        resonant_production=config["resonant_production"]
+        num_runs=simulated_runs
     output:
-        "dimeMC/resonant/exrec.dat"
+        f"dimeMC/resonant/{resonant_production}_exrec.dat"
     shadow: "copy-minimal"
     shell:
-        "./{input.script} {input.fortran} {params.num_runs} {params.resonant_production} ; "
-        "mv dimeMC/resonant/{params.resonant_production}_exrec.dat dimeMC/resonant/exrec.dat"
+        "./{input.script} {input.fortran} {params.num_runs} {resonant_production}"
 
 
 rule simulate_nonreson:
@@ -60,10 +58,10 @@ rule simulate_nonreson:
 
 rule exrec_to_tree_resonant:
     input:
-        data="dimeMC/resonant/exrec.dat",
+        data=f"dimeMC/resonant/{resonant_production}_exrec.dat",
         script="scripts/dimeMC/exrec_to_root.py"
     output:
-        "data/dimeMC/resonant_A.root"
+        f"data/dimeMC/resonant_{resonant_production}_A.root"
     log:
         "logs/exrec_to_tree_resonant_A.log"
     shell:
@@ -84,11 +82,11 @@ rule exrec_to_tree_nonreson:
 
 rule split_dimeMC_resonant:
     input:
-        data="data/dimeMC/resonant_A.root",
+        data=f"data/dimeMC/resonant_{resonant_production}_A.root",
         script="scripts/dimeMC/split.py"
     output:
-        "data/dimeMC/resonant_D.root",
-        "data/dimeMC/resonant_P.root"
+        f"data/dimeMC/resonant_{resonant_production}_D.root",
+        f"data/dimeMC/resonant_{resonant_production}_P.root"
     shell:
         "python3 {input.script} {input.data}"
 
@@ -107,7 +105,7 @@ rule split_dimeMC_nonreson:
 # DimeMC scripts rules
 rule kinematic_scripts:
     input:
-        data_reson="data/dimeMC/resonant_A.root",
+        data_reson=f"data/dimeMC/resonant_{resonant_production}_A.root",
         data_nonre="data/dimeMC/{nonreson_production}_A.root",
         script="scripts/dimeMC/kinematics.py"
     output:
@@ -160,13 +158,13 @@ rule add_kinematics:
 rule inv_mass_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
         dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/invariant_mass_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/joint_{resonant_production}/{cuts_folder}/invmass_{suffix}.png"
+        f"plots/joint_{resonant_production}/{{cuts_folder}}/invmass_{{suffix}}.png"
     params:
         title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})",
         filtered=lambda wildcards: wildcards.cuts_folder == "cut"
@@ -177,7 +175,7 @@ rule inv_mass_combined:
 rule pt_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
         dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/pt_histogram.py",
         plotter="scripts/utilities/plotter.py",
@@ -194,7 +192,7 @@ rule pt_combined:
 rule eta_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
         dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/eta_histogram.py",
         plotter="scripts/utilities/plotter.py",
@@ -211,7 +209,7 @@ rule eta_combined:
 rule angles_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{suffix}.root",
+        dimeMC_reson=f"data/dimeMC/resonant_{resonant_production}_{{suffix}}.root",
         dimeMC_nonre=expand("data/dimeMC/{nonreson_production}_{{suffix}}.root", nonreson_production=nonreson_productions),
         script="scripts/joint/proton_angles_histogram.py",
         plotter="scripts/utilities/plotter.py",

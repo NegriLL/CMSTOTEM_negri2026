@@ -1,6 +1,6 @@
 #-------------------------------- Snakefile -------------------------------#
 # Number of DimeMC runs to simulate
-simulated_runs: 30000
+simulated_runs: 10000
 
 # Resonant particle productions
 resonant_production:
@@ -27,16 +27,21 @@ acceptance:
   py_min: 0.18
   py_max: 0.68
  
-mass:
-  rho_mass: 0.770
-  mass_interval: 0.062
+mass_cuts:
   inv_mass_min: 2.0
   inv_mass_max: 2.5
+  rho:
+    mass: 0.770
+    interval: 0.062
+  phi:
+    mass: 1.019
+    interval: 0.020
  
 momentum:
   px_cut: 0.130
   py_cut: 0.060
-  p_cut: 1
+  p_cut: 1        # GeV
+  momentum_cuts: false
 
 #--------------------------- Graph Options ---------------------------#
 # Style

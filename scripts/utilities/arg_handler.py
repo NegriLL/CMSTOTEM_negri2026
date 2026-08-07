@@ -27,15 +27,18 @@ def get_args_joint(argv):
         production = p.stem.split('_')[0]
         productions[production] = p
 
+    # get resonant productiont type from the middle of the filename
+    resonant_key = resonant_file.stem.split('_')[1]
+
     # make sure savepath exists
     save_path.parent.mkdir(parents=True, exist_ok=True)
 
     if filtered:
         data = ROOT.RDataFrame("tree", str(data_file)).Filter(data_fltr())
-        resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(dime_fltr())
+        resonant = ROOT.RDataFrame("particles", str(resonant_file)).Filter(dime_fltr(resonant_key))
         nonreson = {}
         for key in productions:
-            nonreson[key] = ROOT.RDataFrame("particles", str(productions[key])).Filter(dime_fltr())
+            nonreson[key] = ROOT.RDataFrame("particles", str(productions[key])).Filter(dime_fltr(key))
     else:
         data = ROOT.RDataFrame("tree", str(data_file))
         resonant = ROOT.RDataFrame("particles", str(resonant_file))

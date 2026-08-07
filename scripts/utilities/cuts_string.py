@@ -11,52 +11,70 @@ config = load_config()
 proton_py_min = config["acceptance"]["py_min"]
 proton_py_max = config["acceptance"]["py_max"]
 
-rho_mass = config["mass"]["rho_mass"]
-mass_interval = config["mass"]["mass_interval"]
-inv_mass_min = config["mass"]["inv_mass_min"]
-inv_mass_max = config["mass"]["inv_mass_max"]
+# mass intervals
+mass_cuts = config["mass_cuts"]
+inv_mass_min = mass_cuts["inv_mass_min"]
+inv_mass_max = mass_cuts["inv_mass_max"]
 
 px_cut = config["momentum"]["px_cut"]
 py_cut = config["momentum"]["py_cut"]
 p_cut = config["momentum"]["p_cut"]
 
-mass_min = rho_mass - mass_interval
-mass_max = rho_mass + mass_interval
+momentum_cuts = config["momentum"]["momentum_cuts"]
 
-def dime_fltr():
+def dime_fltr(production):
     fltr_acceptance = ( 
     f"(({proton_py_min} < fabs(p1_out_py)) && (fabs(p1_out_py) < {proton_py_max})) && "
     f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
     )
-    fltr_mass = (f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
-                    f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max})) && "
-                    f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
+
+    fltr_mass = f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}"
+    try:
+        particle = mass_cuts[production]
+        mass_min = particle["mass"] - particle["interval"]
+        mass_max = particle["mass"] + particle["interval"]
+        fltr_mass = (f"{fltr_mass} && "
+                     f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
+                     f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max}))")
+    except KeyError:
+        print()
+        print(f"Mass boundaries for {production} not found in config file. Skipping.")
+        print()
+
     return f"{fltr_acceptance} && {fltr_mass}"
 
 def data_fltr():
+    try:
+        mass_min = mass_cuts["rho"]["mass"] - mass_cuts["rho"]["interval"]
+        mass_max = mass_cuts["rho"]["mass"] - mass_cuts["rho"]["interval"]
+    except KeyError:
+        rho_mass = 0.770
+        interval = 0.062
+        mass_min = rho_mass - interval
+        mass_max = rho_mass + interval
+
     fltr_data = (f"fabs(px_diff) < {px_cut} && "
-                    f"fabs(py_diff) < {py_cut} && "
-                    f"fabs(trk_p[0]) < {p_cut} && "
-                    f"fabs(trk_p[1]) < {p_cut} && "
-                    f"fabs(trk_p[2]) < {p_cut} && "
-                    f"fabs(trk_p[3]) < {p_cut} && "
-                    f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
-                    f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
-                    f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
-    return fltr_data
+                 f"fabs(py_diff) < {py_cut} && "
+                 f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
+                 f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
+                 f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
+    
+    fltr_p = (f"fabs(trk_p[0]) < {p_cut} && "
+              f"fabs(trk_p[1]) < {p_cut} && " # remove these for comparison with dimemc
+              f"fabs(trk_p[2]) < {p_cut} && "
+              f"fabs(trk_p[3]) < {p_cut}")
+
+    return f"{fltr_data} && {fltr_p}" if momentum_cuts else fltr_data
 
 
 if __name__ == "__main__":
     print()
     print(f"proton_py_min = {proton_py_min:.3f}")
     print(f"proton_py_max = {proton_py_max:.3f}")
-    print(f"rho_mass      = {rho_mass:.3f}")
-    print(f"mass_interval = {mass_interval:.3f}")
     print(f"px_cut        = {px_cut:.3f}")
     print(f"py_cut        = {py_cut:.3f}")
     print(f"p_cut         = {p_cut:.3f}")
-    print(f"mass_min      = {mass_min:.3f}")
-    print(f"mass_max      = {mass_max:.3f}")
     print(f"inv_mass_min  = {inv_mass_min:.3f}")
     print(f"inv_mass_max  = {inv_mass_max:.3f}")
     print()
+    # ToDo: add the particle production here dynamically
