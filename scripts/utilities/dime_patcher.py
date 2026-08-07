@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from ast import arg
-from os import replace
 import re
 from pathlib import Path
 
