@@ -4,12 +4,13 @@ simulated_runs: 10000
 
 # Resonant particle productions
 resonant_production:
-  phi
+  - rho
+  - phi
 
 # Nonresonant particle productions
 nonreson_productions:
-  - phi
   - rho
+  - phi
 
 # DimeMC Files
 fortran_files:
