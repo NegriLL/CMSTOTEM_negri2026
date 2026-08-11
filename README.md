@@ -15,7 +15,7 @@ If you have any questions, email me. I'm happy to try to help you understand my 
 2. Download DimeMC and save it to the `dimeMC/` folder.
     - `dimemc` goes in `dimeMC/nonreson`
     - `dimemc_vsm` goes in `dimeMC/resonant`
-3. Create a virtual environment. Check `requirements.txt`. To install the requirements automatically, you can try running
+3. Create a virtual environment. Check `requirements.txt`. You will still need to install root manually (I was using version 6.40.02). To install the other requirements automatically, you can try running
 ```shell
     python3 -m venv .venv
     source .venv/bin/activate
