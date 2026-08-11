@@ -1,8 +1,11 @@
 # CERN Summer job 2026 Leonardo Negri
 
 The objective of this repo is to combine data collected by CMS-TOTEM with synthetic data from DimeMC. We want to find kinetic differences in resonant and non-resonant productions of Glueball decay products. This way, we hope to be able to find a signal in the data.
-I've set up this repository to work as easily as possible with the data. I am not a software developer, so I am sure I am not following best practices with the way I arranged some of these files. Regardless, as long as the data files and dime are set up correctly, the rest of the code should work easily through snakemake.
+
+I've set up this repository to work as easily as possible with the data. I am not a software developer, so I am sure I am not following best practices with the way I arranged the workflow and implemented some of the code. Regardless, as long as the data files and dime are set up correctly, the rest of the code should work easily through snakemake. Instructions are found below.
+
 As the code grew in complexity, I had to go back and add a few hacks to the previous logic. These should be fixed at some point to make sure the codebase is more modular and the types of graphs are easier to customise. I added a ToDo at the end of the readme in case I (or someone else) has free time and drive to make these alterations.
+
 If you have any questions, email me. I'm happy to try to help you understand my spaghetti.
 
 ## Instructions
@@ -38,4 +41,4 @@ chmod +x job.sh
 Some changes that would be nice to add.
 
 - arg_handler should create a dictionary of the arguments dynamically. This way everything else can access the values dyncamically.
-- plotter should be standardised to all functions can use the same plotter and customise how the plots are done through arguments.
+- plotter should be standardised so all functions can use the same plotter and customise how the plots are done through arguments.
