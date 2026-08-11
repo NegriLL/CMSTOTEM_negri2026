@@ -7,15 +7,22 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "utilities"))
 from load_config import load_config
 
-def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
-    data_hist = data_hist.GetValue()
+def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title, plot_data=True):
+    if plot_data:
+        data_hist = data_hist.GetValue()
     resonant_hist = resonant_hist.GetValue()
     nonreson_list = [nonreson_hists[key].GetValue() for key in nonreson_hists]
 
-    for h in (data_hist, resonant_hist, *nonreson_list):
-        max_val = h.GetMaximum()
-        if max_val != 0:
-            h.Scale(1.0 / max_val)
+    if plot_data:
+        for h in (data_hist, resonant_hist, *nonreson_list):
+            max_val = h.GetMaximum()
+            if max_val != 0:
+                h.Scale(1.0 / max_val)
+    else:
+        for h in (resonant_hist, *nonreson_list):
+            max_val = h.GetMaximum()
+            if max_val != 0:
+                h.Scale(1.0 / max_val)
 
     config = load_config()
     line_width = config["line_width"]
@@ -31,9 +38,10 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
 
     resonant_production = str(save_path.parent.parent).split('_')[-1]
 
-    data_hist.SetTitle(title)
-    data_hist.SetLineWidth(line_width)
-    data_hist.SetLineStyle(line_style_data)
+    if plot_data:
+        data_hist.SetTitle(title)
+        data_hist.SetLineWidth(line_width)
+        data_hist.SetLineStyle(line_style_data)
 
     resonant_hist.SetLineWidth(line_width)
     resonant_hist.SetLineStyle(line_style_resonant)
@@ -42,13 +50,18 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
         hist.SetLineWidth(line_width)
         hist.SetLineStyle(line_style_nonresonant)
 
-    ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, *nonreson_list))
-    data_hist.SetMaximum(ymax * 1.1)
+    if plot_data:
+        ymax = max(h.GetMaximum() for h in (data_hist, resonant_hist, *nonreson_list))
+        data_hist.SetMaximum(ymax * 1.1)
+    else:
+        ymax = max(h.GetMaximum() for h in (resonant_hist, *nonreson_list))
+        resonant_hist.SetMaximum(ymax * 1.1)
 
     c = ROOT.TCanvas("c", "c", image_size_x, image_size_y)
     
     ROOT.gStyle.SetPalette(ROOT.kBlueRedYellow)
-    data_hist.Draw("HIST")
+    if plot_data:
+        data_hist.Draw("HIST")
     for hist in nonreson_list:
         hist.Draw("HIST PLC SAME")
     resonant_hist.Draw("HIST PLC SAME")
@@ -57,8 +70,8 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title):
                           legend_y1,
                           legend_x2,
                           legend_y2)
-    
-    legend.AddEntry(data_hist, "Data", "l")
+    if plot_data:
+        legend.AddEntry(data_hist, "Data", "l")
     legend.AddEntry(resonant_hist, f"DimeMC Resonant {resonant_production}", "l")
     for key, hist in zip(nonreson_hists, nonreson_list):
         legend.AddEntry(hist, f"DimeMC Nonresonant {key}", "l")
