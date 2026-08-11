@@ -64,3 +64,6 @@ legend:
   y1: 0.7
   x2: 0.9
   y2: 0.9
+
+# Plot all non-resonant plots together or only those that match the resonant production
+all_plots: false
