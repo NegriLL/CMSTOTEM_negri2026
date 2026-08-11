@@ -6,6 +6,7 @@ resonant_productions = config["resonant_production"]
 nonreson_productions = config["nonreson_productions"]
 fortran_files = config["fortran_files"]
 suffix_map = config["suffix_map"]
+title_map = config["title_map"]
 
 # Defining basic constraints
 wildcard_constraints:
@@ -36,7 +37,6 @@ rule all:
             suffix=["D", "P", "A"],
             graph=["eta", "pt"]
         )
-
 
 # Simulation rules
 rule simulate_resonant:
@@ -164,97 +164,31 @@ rule add_kinematics:
 
 #-----------------------------------------// Combined scripts \\-----------------------------------------#
 # These scripts plot data and Dime together.
-rule inv_mass_combined:
+rule joint_combined:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
-        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
-        script="scripts/joint/invariant_mass_histogram.py",
-        plotter="scripts/utilities/plotter.py",
-        config_file="config.yaml"
-    output:
-        "plots/joint_{resonant_production}/{cuts_folder}/invmass_{suffix}.png"
+        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{p}_{suffix}.root", p=nonreson_productions, suffix=wildcards.suffix),
+        script="scripts/joint/{graph}_histogram.py",
     params:
-        title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})",
+        title=lambda wildcards: f"{title_map[wildcards.graph]} ({suffix_map[wildcards.suffix]})",
+    output:
+        "plots/joint_{resonant_production}/{cuts_folder}/{graph}_{suffix}.png"
     shell:
         "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
-
-
-rule pt_combined:
-    input:
-        data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
-        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
-        script="scripts/joint/pt_histogram.py",
-        plotter="scripts/utilities/plotter.py",
-        config_file="config.yaml"
-    output:
-        "plots/joint_{resonant_production}/{cuts_folder}/pt_{suffix}.png"
-    params:
-        title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})",
-    shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
-
-
-rule eta_combined:
-    input:
-        data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
-        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
-        script="scripts/joint/eta_histogram.py",
-        plotter="scripts/utilities/plotter.py",
-        config_file="config.yaml"
-    output:
-        "plots/joint_{resonant_production}/{cuts_folder}/eta_{suffix}.png"
-    params:
-        title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})",
-    shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
-
-
-rule angles_combined:
-    input:
-        data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_{resonant_production}_{suffix}.root",
-        dimeMC_nonre=lambda wildcards: expand("data/dimeMC/{nonreson_production}_{suffix}.root", nonreson_production=nonreson_productions, suffix=wildcards.suffix),
-        script="scripts/joint/proton_angles_histogram.py",
-        plotter="scripts/utilities/plotter.py",
-        config_file="config.yaml"
-    output:
-        "plots/joint_{resonant_production}/{cuts_folder}/proton_angle_{suffix}.png"
-    params:
-        title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})",
-    shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
-
 
 #-----------------------------------------// Kaon plots \\-----------------------------------------#
-rule kaon_eta:
+rule kaon_graphs:
     input:
         data="data/kinematics/TOTEM_{suffix}.root",
         dimeMC_reson="data/dimeMC/resonant_phi_{suffix}.root",
         dimeMC_nonre="data/dimeMC/phi_{suffix}.root",
-        script="scripts/kaon/kaon_eta_histogram.py",
+        script="scripts/kaon/kaon_{graph}_histogram.py",
         plotter="scripts/utilities/plotter.py",
         config_file="config.yaml"
     output:
-        "plots/kaon/{cuts_folder}/eta_{suffix}.png"
+        "plots/kaon/{cuts_folder}/{graph}_{suffix}.png"
     params:
-        title=lambda wildcards: f"Kaon #eta ({suffix_map[wildcards.suffix]})",
-    shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
-
-rule kaon_pt:
-    input:
-        data="data/kinematics/TOTEM_{suffix}.root",
-        dimeMC_reson="data/dimeMC/resonant_phi_{suffix}.root",
-        dimeMC_nonre="data/dimeMC/phi_{suffix}.root",
-        script="scripts/kaon/kaon_pt_histogram.py",
-        plotter="scripts/utilities/plotter.py",
-        config_file="config.yaml"
-    output:
-        "plots/kaon/{cuts_folder}/pt_{suffix}.png"
-    params:
-        title=lambda wildcards: f"pt ({suffix_map[wildcards.suffix]})",
+        title=lambda wildcards: f"Kaon {title_map[wildcards.graph]} ({suffix_map[wildcards.suffix]})",
     shell:
         "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"

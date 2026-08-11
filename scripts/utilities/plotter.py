@@ -42,6 +42,10 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title, plot_
         data_hist.SetTitle(title)
         data_hist.SetLineWidth(line_width)
         data_hist.SetLineStyle(line_style_data)
+    else:
+        resonant_hist.SetTitle(title)
+        resonant_hist.SetLineWidth(line_width)
+        resonant_hist.SetLineStyle(line_style_resonant)
 
     resonant_hist.SetLineWidth(line_width)
     resonant_hist.SetLineStyle(line_style_resonant)
@@ -62,6 +66,9 @@ def plot_joint(data_hist, resonant_hist, nonreson_hists, save_path, title, plot_
     ROOT.gStyle.SetPalette(ROOT.kBlueRedYellow)
     if plot_data:
         data_hist.Draw("HIST")
+        resonant_hist.Draw("HIST PLC SAME")
+    else:
+        resonant_hist.Draw("HIST")
     for hist in nonreson_list:
         hist.Draw("HIST PLC SAME")
     resonant_hist.Draw("HIST PLC SAME")

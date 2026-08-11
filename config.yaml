@@ -23,6 +23,13 @@ suffix_map:
   A: "All"
   P: "Parallel"
 
+title_map:
+  pt: "p_{T}"
+  eta: "#eta"
+  invmass: "Invariant Mass"
+  proton_angle: "Proton Angle"
+
+
 #-------------------------------- Cuts -------------------------------#
 acceptance:
   py_min: 0.18
