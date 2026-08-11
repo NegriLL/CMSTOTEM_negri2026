@@ -10,7 +10,7 @@ suffix_map = config["suffix_map"]
 # Defining basic constraints
 wildcard_constraints:
     suffix="D|P|A",
-    cuts_folder="cut|raw",
+    cuts_folder="cut|raw|outside",
     nonreson_production="|".join(nonreson_productions),
     resonant_production="|".join(resonant_productions)
 
@@ -26,7 +26,7 @@ rule all:
         expand(
             "plots/joint_{resonant_production}/{cuts_folder}/{graph}_{suffix}.png",
             resonant_production=resonant_productions,
-            cuts_folder=["cut", "raw"],
+            cuts_folder=["cut", "raw", "outside"],
             graph=["eta", "pt", "invmass", "proton_angle"],
             suffix=["D", "P", "A"],
         )
@@ -170,9 +170,8 @@ rule inv_mass_combined:
         "plots/joint_{resonant_production}/{cuts_folder}/invmass_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Invariant Mass ({suffix_map[wildcards.suffix]})",
-        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
 
 
 rule pt_combined:
@@ -187,9 +186,8 @@ rule pt_combined:
         "plots/joint_{resonant_production}/{cuts_folder}/pt_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Transverse Momentum ({suffix_map[wildcards.suffix]})",
-        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
 
 
 rule eta_combined:
@@ -204,9 +202,8 @@ rule eta_combined:
         "plots/joint_{resonant_production}/{cuts_folder}/eta_{suffix}.png"
     params:
         title=lambda wildcards: f"Combined Rapidity ({suffix_map[wildcards.suffix]})",
-        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
 
 
 rule angles_combined:
@@ -221,6 +218,5 @@ rule angles_combined:
         "plots/joint_{resonant_production}/{cuts_folder}/proton_angle_{suffix}.png"
     params:
         title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})",
-        filtered=lambda wildcards: wildcards.cuts_folder == "cut"
     shell:
-        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {params.filtered} {input.dimeMC_nonre}"
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
