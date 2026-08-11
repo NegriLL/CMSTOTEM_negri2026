@@ -22,13 +22,17 @@ p_cut = config["momentum"]["p_cut"]
 
 momentum_cuts = config["momentum"]["momentum_cuts"]
 
-def dime_fltr(production):
+def dime_fltr(production, inside = True):
     fltr_acceptance = ( 
     f"(({proton_py_min} < fabs(p1_out_py)) && (fabs(p1_out_py) < {proton_py_max})) && "
     f"(({proton_py_min} < fabs(p2_out_py)) && (fabs(p2_out_py) < {proton_py_max}))"
     )
 
-    fltr_mass = f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}"
+    if inside:
+        fltr_mass = f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}"
+    else:
+        fltr_mass = f"inv_mass < {inv_mass_min} || {inv_mass_max} < inv_mass"
+
     try:
         particle = mass_cuts[production]
         mass_min = particle["mass"] - particle["interval"]
@@ -43,7 +47,7 @@ def dime_fltr(production):
 
     return f"{fltr_acceptance} && {fltr_mass}"
 
-def data_fltr():
+def data_fltr(inside = True):
     try:
         mass_min = mass_cuts["rho"]["mass"] - mass_cuts["rho"]["interval"]
         mass_max = mass_cuts["rho"]["mass"] + mass_cuts["rho"]["interval"]
@@ -53,11 +57,16 @@ def data_fltr():
         mass_min = rho_mass - interval
         mass_max = rho_mass + interval
 
+    if inside:
+        fltr_mass = f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}"
+    else:
+        fltr_mass = f"inv_mass < {inv_mass_min} || {inv_mass_max} < inv_mass"
+
     fltr_data = (f"fabs(px_diff) < {px_cut} && "
                  f"fabs(py_diff) < {py_cut} && "
                  f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
                  f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
-                 f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}")
+                 f"{fltr_mass}")
     
     fltr_p = (f"fabs(trk_p[0]) < {p_cut} && "
               f"fabs(trk_p[1]) < {p_cut} && "
