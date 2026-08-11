@@ -10,7 +10,7 @@ If you have any questions, email me. I'm happy to try to help you understand my 
 
 ## Instructions
 1. Save the YounesNtuples to `data/YounesNtuples`. It should contain the following files
-    - `TOTEM20.ROOT, TOTEM21.root, TOTEM22.root, TOTEM23.root`
+    - `TOTEM20.root, TOTEM21.root, TOTEM22.root, TOTEM23.root`
     - `TOTEM40.root, TOTEM41.root, TOTEM42.root, TOTEM43.root`
 2. Download DimeMC and save it to the `dimeMC/` folder.
     - `dimemc` goes in `dimeMC/nonreson`
