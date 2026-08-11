@@ -29,6 +29,12 @@ rule all:
             cuts_folder=["cut", "raw", "outside"],
             graph=["eta", "pt", "invmass", "proton_angle"],
             suffix=["D", "P", "A"],
+        ),
+        expand(
+            "plots/kaon/{cuts_folder}/{graph}_{suffix}.png",
+            cuts_folder=["cut", "raw", "outside"],
+            suffix=["D", "P", "A"],
+            graph=["eta", "pt"]
         )
 
 
@@ -218,5 +224,37 @@ rule angles_combined:
         "plots/joint_{resonant_production}/{cuts_folder}/proton_angle_{suffix}.png"
     params:
         title=lambda wildcards: f"Proton Angle Difference ({suffix_map[wildcards.suffix]})",
+    shell:
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
+
+
+#-----------------------------------------// Kaon plots \\-----------------------------------------#
+rule kaon_eta:
+    input:
+        data="data/kinematics/TOTEM_{suffix}.root",
+        dimeMC_reson="data/dimeMC/resonant_phi_{suffix}.root",
+        dimeMC_nonre="data/dimeMC/phi_{suffix}.root",
+        script="scripts/kaon/kaon_eta_histogram.py",
+        plotter="scripts/utilities/plotter.py",
+        config_file="config.yaml"
+    output:
+        "plots/kaon/{cuts_folder}/eta_{suffix}.png"
+    params:
+        title=lambda wildcards: f"Kaon #eta ({suffix_map[wildcards.suffix]})",
+    shell:
+        "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
+
+rule kaon_pt:
+    input:
+        data="data/kinematics/TOTEM_{suffix}.root",
+        dimeMC_reson="data/dimeMC/resonant_phi_{suffix}.root",
+        dimeMC_nonre="data/dimeMC/phi_{suffix}.root",
+        script="scripts/kaon/kaon_pt_histogram.py",
+        plotter="scripts/utilities/plotter.py",
+        config_file="config.yaml"
+    output:
+        "plots/kaon/{cuts_folder}/pt_{suffix}.png"
+    params:
+        title=lambda wildcards: f"pt ({suffix_map[wildcards.suffix]})",
     shell:
         "python3 {input.script} {input.data} {input.dimeMC_reson} {output} '{params.title}' {wildcards.cuts_folder} {input.dimeMC_nonre}"
