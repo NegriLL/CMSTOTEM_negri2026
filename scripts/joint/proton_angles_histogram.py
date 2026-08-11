@@ -15,7 +15,7 @@ ROOT.gROOT.SetBatch(True)
 
 
 def proton_angle_together(data, resonant, nonresonant):
-    nbins = 100
+    nbins = 50
     xmin = 0
     xmax = math.pi
 
