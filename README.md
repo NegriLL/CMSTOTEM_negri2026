@@ -30,7 +30,7 @@ snakemake --cores all
 6. Cuts can be edited in the config.yaml file for convenience.
 7. If there are problems (and there will be), email me.
 
-Possible errors:
+# Possible errors:
 - If you get a permission denied error when trying to run job.sh, try running
 ``` shell
 chmod +x job.sh
