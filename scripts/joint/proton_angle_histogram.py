@@ -20,18 +20,18 @@ def proton_angle_together(data, resonant, nonresonant):
     xmax = math.pi
 
     data = data.Define("diff",
-        "double phi1 = atan2(ThyR, ThxR);"
-        "double phi2 = atan2(ThyL, ThxL);"
-        "double d = fabs(phi1 - phi2);"
-        "return d > M_PI ? 2*M_PI - d : d;")
+                       "double phi1 = atan2(ThyR, ThxR);"
+                       "double phi2 = atan2(ThyL, ThxL);"
+                       "double d = fabs(phi1 - phi2);"
+                       "return d > M_PI ? 2*M_PI - d : d;")
     data_hist = data.Histo1D(("proton_angle_data", "proton_angle_data", nbins, xmin, xmax), "diff")
 
     def make_hist(df, histname):
         df = df.Define("diff",
-            "TLorentzVector p1(p1_out_px, p1_out_py, p1_out_pz, p1_out_e);"
-            "TLorentzVector p2(p2_out_px, p2_out_py, p2_out_pz, p2_out_e);"
-            "double d = fabs(p1.Phi() - p2.Phi());"
-            "return d > M_PI ? 2*M_PI - d : d;")
+                       "TLorentzVector p1(p1_out_px, p1_out_py, p1_out_pz, p1_out_e);"
+                       "TLorentzVector p2(p2_out_px, p2_out_py, p2_out_pz, p2_out_e);"
+                       "double d = fabs(p1.Phi() - p2.Phi());"
+                       "return d > M_PI ? 2*M_PI - d : d;")
         return df.Histo1D((histname, histname, nbins, xmin, xmax), "diff")
 
     resonant_hist = make_hist(resonant, "proton_angle_reson")
