@@ -8,6 +8,8 @@ As the code grew in complexity, I had to go back and add a few hacks to the prev
 
 If you have any questions, email me. I'm happy to try to help you understand my spaghetti.
 
+![Structure of the jobs](dag.svg)
+
 ## Instructions
 1. Save the YounesNtuples to `data/YounesNtuples`. It should contain the following files
     - `TOTEM20.root, TOTEM21.root, TOTEM22.root, TOTEM23.root`
@@ -30,6 +32,10 @@ If you have any questions, email me. I'm happy to try to help you understand my 
 snakemake --cores all
 ```
 6. Cuts can be edited in the config.yaml file for convenience.
+8. You can get a map of the data pipeline with
+```shell
+snakemake --rulegraph | dot -Tsvg > dag.svg
+```
 7. If there are problems (and there will be), email me.
 
 # Possible errors:
