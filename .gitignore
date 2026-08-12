@@ -7,7 +7,6 @@
 *.dat
 *.png
 *.root
-*.svg
 
 # Binaries
 *.o

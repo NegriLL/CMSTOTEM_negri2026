@@ -19,9 +19,9 @@ If you have any questions, email me. I'm happy to try to help you understand my 
     - `dimemc_vsm` goes in `dimeMC/resonant`
 3. Create a virtual environment. Check `requirements.txt`. You will still need to install root manually (I was using version 6.40.02). To install the other requirements automatically, you can try running
 ```shell
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 4. Run `scripts/utilities/dime_patcher.py` to update dimeMC for compatibility. This only has to be done once. The changes are as follows:
     - Accept `nev` (number of events) from commmand line arguments
