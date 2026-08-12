@@ -44,3 +44,4 @@ Some changes that would be nice to add.
 
 - arg_handler should create a dictionary of the arguments dynamically. This way everything else can access the values dyncamically.
 - plotter should be standardised so all functions can use the same plotter and customise how the plots are done through arguments.
+- convert the filters to a class
