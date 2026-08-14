@@ -31,13 +31,13 @@ def dime_fltr(production, inside = True):
     if inside:
         fltr_mass = f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}"
     else:
-        fltr_mass = f"inv_mass < {inv_mass_min} || {inv_mass_max} < inv_mass"
+        fltr_mass = "(2.000 < inv_mass && inv_mass < 2.180) || (2.260 < inv_mass && inv_mass < 2.500)"
 
     try:
         particle = mass_cuts[production]
         mass_min = particle["mass"] - particle["interval"]
         mass_max = particle["mass"] + particle["interval"]
-        fltr_mass = (f"{fltr_mass} && "
+        fltr_mass = (f"({fltr_mass}) && "
                      f"(({mass_min} < primary_m[0]) && (primary_m[0] < {mass_max})) && "
                      f"(({mass_min} < primary_m[1]) && (primary_m[1] < {mass_max}))")
     except KeyError:
@@ -60,13 +60,13 @@ def data_fltr(inside = True):
     if inside:
         fltr_mass = f"{inv_mass_min} < inv_mass && inv_mass < {inv_mass_max}"
     else:
-        fltr_mass = f"inv_mass < {inv_mass_min} || {inv_mass_max} < inv_mass"
+        fltr_mass = "(2.000 < inv_mass && inv_mass < 2.180) || (2.260 < inv_mass && inv_mass < 2.500)"
 
     fltr_data = (f"fabs(px_diff) < {px_cut} && "
                  f"fabs(py_diff) < {py_cut} && "
                  f"{mass_min} < pair_masses[0][0] && pair_masses[0][0] < {mass_max} && "
                  f"{mass_min} < pair_masses[0][1] && pair_masses[0][1] < {mass_max} && "
-                 f"{fltr_mass}")
+                 f"({fltr_mass})")
     
     fltr_p = (f"fabs(trk_p[0]) < {p_cut} && "
               f"fabs(trk_p[1]) < {p_cut} && "
@@ -78,12 +78,18 @@ def data_fltr(inside = True):
 
 if __name__ == "__main__":
     print()
-    print(f"proton_py_min = {proton_py_min:.3f}")
-    print(f"proton_py_max = {proton_py_max:.3f}")
-    print(f"px_cut        = {px_cut:.3f}")
-    print(f"py_cut        = {py_cut:.3f}")
-    print(f"p_cut         = {p_cut:.3f}")
-    print(f"inv_mass_min  = {inv_mass_min:.3f}")
-    print(f"inv_mass_max  = {inv_mass_max:.3f}")
+    print(f"{'proton_py_min':<18}= {proton_py_min:.3f}")
+    print(f"{'proton_py_max':<18}= {proton_py_max:.3f}")
+    print(f"{'px_cut':<18}= {px_cut:.3f}")
+    print(f"{'py_cut':<18}= {py_cut:.3f}")
+    print(f"{'p_cut':<18}= {p_cut:.3f}")
+    print(f"{'inv_mass_min':<18}= {inv_mass_min:.3f}")
+    print(f"{'inv_mass_max':<18}= {inv_mass_max:.3f}")
+    print()
+    print(f"Nonresonant masses")
+    for key in config["nonreson_productions"]:
+        print(f"  {key + ":":<7}{'mass':<8} = {mass_cuts[key]['mass']:.3f}")
+        print(f"  {key + ":":<7}{'interval':<8} = {mass_cuts[key]['interval']:.3f}")
+        print()
     print()
     # ToDo: add the particle production here dynamically
